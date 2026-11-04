@@ -1,0 +1,21 @@
+import { ArticleLayout } from '@/components/ArticleLayout'
+
+export const article = {
+  author: 'Author name',
+  date: '2026-01-01',
+  title: 'Placeholder piece title',
+  description: 'Placeholder description of the piece.',
+}
+
+export const metadata = {
+  title: article.title,
+  description: article.description,
+}
+
+export default (props) => <ArticleLayout article={article} {...props} />
+
+Placeholder opening paragraph.
+
+## Placeholder heading
+
+Placeholder paragraph.
