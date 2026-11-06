@@ -21,7 +21,7 @@ Test levels:
 What it does: renders a `<button>` when there's no `href`, and a Next `<Link>` when there is one. Two visual variants: `primary` (default) and `secondary`. Passes all other props through.
 
 | Behaviour | Kind | Level |
-|---|---|---|
+| --- | --- | --- |
 | Without `href`, renders a button you can find by role `button` | Characterise | Component |
 | With `href`, renders a link with that `href` (role `link`) | Characterise | Component |
 | Passes through props such as `type="submit"`, `disabled`, `onClick` | Characterise | Component |
@@ -35,7 +35,7 @@ Notes: this becomes the "Make an offer or ask a question" trigger, so the button
 What it does: a compound component. `Card` renders as any element via `as`. `Card.Title` renders a heading (default `h2`) and wraps its text in `Card.Link` when given `href`. `Card.Link` makes the whole card clickable with an overlay span. `Card.Eyebrow` renders a small label (default `p`, often `time`) with an optional decorative bar. `Card.Cta` is a visual "Read article" prompt that is `aria-hidden`. `Card.Description` is a paragraph.
 
 | Behaviour | Kind | Level |
-|---|---|---|
+| --- | --- | --- |
 | `Card` renders as the element passed in `as` (for example `article`, `li`) | Characterise | Component |
 | `Card.Title` with `href` renders a heading containing a link to that `href` | Characterise | Component |
 | `Card.Title` without `href` renders plain heading text, no link | Characterise | Component |
@@ -52,7 +52,7 @@ Notes: these are the building blocks of the collection gallery, so they're worth
 What it does: nested width-limiting `div`s. Forwards refs and extra props.
 
 | Behaviour | Kind | Level |
-|---|---|---|
+| --- | --- | --- |
 | Renders children (harness test already does this) | Characterise | Component |
 | Forwards a ref to the outer element | Characterise | Component (optional) |
 | Width and padding classes | Skip | |
@@ -62,7 +62,7 @@ What it does: nested width-limiting `div`s. Forwards refs and extra props.
 What it does: page header with an `h1` title and intro paragraph; renders a children wrapper only when there are children.
 
 | Behaviour | Kind | Level |
-|---|---|---|
+| --- | --- | --- |
 | Shows the title as the page's level-1 heading | Characterise | Component |
 | Shows the intro text | Characterise | Component |
 | Renders children when given; renders no wrapper when not | Characterise | Component |
@@ -87,38 +87,38 @@ Pure SVG. **Skip.** Accessible names come from the links that wrap them, which a
 
 The most complex component. Several behaviours bundled together:
 
-**Navigation**
+#### Navigation
 
 | Behaviour | Kind | Level |
-|---|---|---|
+| --- | --- | --- |
 | Desktop nav lists the site's pages as links | Drive (links will change: Collection, About) | Component |
 | The link for the current page is marked active | Drive: add `aria-current="page"`. Today "active" is only a colour class, which screen readers can't see and tests can only check via class names | Component |
 | Mobile "Menu" button opens a panel containing the same links | Characterise | Component |
 | "Close menu" closes the panel | Characterise | Component |
 | Choosing a link in the mobile panel closes it | Characterise | Component / e2e |
 
-**Theme toggle**
+#### Theme toggle
 
 | Behaviour | Kind | Level |
-|---|---|---|
+| --- | --- | --- |
 | Before mount, label is "Toggle theme" (avoids a hydration mismatch) | Characterise | Component |
 | After mount, label says which theme it will switch to ("Switch to dark theme") | Characterise | Component |
 | Clicking it calls `setTheme` with the other theme | Characterise | Component, with `next-themes` mocked |
 | The theme persists across reloads | Characterise | End-to-end |
 
-**Avatar**
+#### Avatar
 
 | Behaviour | Kind | Level |
-|---|---|---|
+| --- | --- | --- |
 | On the home page, shows the large avatar; elsewhere, the small one | Characterise | Component |
 | Avatar links home with accessible name "Home" | Characterise | Component |
 
-**Scroll-driven header and avatar animation**
+#### Scroll-driven header and avatar animation
 
 The `useEffect` calculates header height, margins and avatar scale from `window.scrollY` and writes CSS custom properties to `<html>`.
 
 | Behaviour | Kind | Level |
-|---|---|---|
+| --- | --- | --- |
 | Avatar scales from 1 to 36/64 and shifts right as you scroll past the delay | Characterise after refactor | Unit |
 | Header becomes fixed once you've scrolled past the avatar | Characterise after refactor | Unit |
 | It looks right while scrolling | Skip, or a single visual check | End-to-end |
@@ -128,7 +128,7 @@ The `useEffect` calculates header height, margins and avatar scale from `window.
 ### `Footer`
 
 | Behaviour | Kind | Level |
-|---|---|---|
+| --- | --- | --- |
 | Lists the same pages as the header | Drive (links will change) | Component |
 | Shows "© {current year} {site name}" | Characterise, with the system time fixed via `vi.setSystemTime` | Component |
 
@@ -141,7 +141,7 @@ Composes the header, main content and footer. **Skip** at component level; one e
 ### `Providers` (`src/app/providers.tsx`)
 
 | Behaviour | Kind | Level |
-|---|---|---|
+| --- | --- | --- |
 | Exposes the previous pathname through `AppContext` after navigation | Characterise | Component, with `usePathname` mocked and the provider rerendered with a new path |
 | On first render there is no previous pathname | Characterise | Component |
 | `ThemeWatcher` switches to "system" when the chosen theme matches the OS setting | Characterise | Component, with `matchMedia` mocked (jsdom doesn't provide it) |
@@ -149,7 +149,7 @@ Composes the header, main content and footer. **Skip** at component level; one e
 ### `ArticleLayout` (becomes the piece page layout)
 
 | Behaviour | Kind | Level |
-|---|---|---|
+| --- | --- | --- |
 | Shows the title as the `h1` and the formatted date in a `time` element | Characterise | Component |
 | Renders the MDX body inside the prose wrapper | Characterise | Component |
 | Shows a "Go back" button only when there is a previous page, and it calls `router.back()` | Characterise | Component, with `AppContext` and `useRouter` mocked |
@@ -164,7 +164,7 @@ This is where most of the showcase's new behaviour will be test-driven.
 Next 16 pages are async server components. React Testing Library can render one by awaiting it first: `render(await Home())`.
 
 | Page | Behaviour | Kind | Level |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Home | Lists the most recent articles (at most four), newest first | Characterise now, then drive into "recently added pieces" | Component, with `getAllArticles` mocked |
 | Home | Photo strip shows five photos | Drive (becomes featured pieces) | Component |
 | Home | Placeholder list (old "Work" panel): each entry shows organisation, role and a date range with an accessible label "2000 until Present" | Characterise if kept for "Our past lives" | Component |
@@ -183,7 +183,7 @@ Next 16 pages are async server components. React Testing Library can render one 
 What it does: globs `src/app/articles/*/page.mdx` from the file system, dynamically imports each one to read its exported `article` metadata, adds a slug from the folder name, and sorts newest first.
 
 | Behaviour | Kind | Level |
-|---|---|---|
+| --- | --- | --- |
 | Slug comes from the folder name | Characterise | Unit |
 | Sorted newest first | Characterise, then drive "sorted by date made" | Unit |
 
@@ -198,7 +198,7 @@ Covered by the harness test: long US-style date, no time-zone shift. **Drive:** 
 What it does today: lists the MDX folders, then **fetches each rendered article page over HTTP from itself** and scrapes the title, date and body out of the HTML with cheerio to build an RSS feed. It throws if `NEXT_PUBLIC_SITE_URL` is missing.
 
 | Behaviour | Kind | Level |
-|---|---|---|
+| --- | --- | --- |
 | Throws a clear error when `NEXT_PUBLIC_SITE_URL` is missing | Characterise | Unit |
 | Produces valid RSS with one item per piece | Drive | Unit, once it builds from the repository |
 | Responds with `content-type: application/xml` | Characterise | Unit or end-to-end |
