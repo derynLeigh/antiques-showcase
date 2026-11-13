@@ -28,6 +28,22 @@ describe('Button', () => {
       expect(onClick).toHaveBeenCalledTimes(1)
     })
 
+    it('does not submit a surrounding form when clicked', async () => {
+      const user = userEvent.setup()
+      const onSubmit = vi.fn((event: React.SubmitEvent) =>
+        event.preventDefault(),
+      )
+      render(
+        <form onSubmit={onSubmit}>
+          <Button>Cancel</Button>
+        </form>,
+      )
+
+      await user.click(screen.getByRole('button', { name: 'Cancel' }))
+
+      expect(onSubmit).not.toHaveBeenCalled()
+    })
+
     it('passes through button attributes such as type', () => {
       render(<Button type="submit">Send offer</Button>)
 
