@@ -55,6 +55,18 @@ describe('Card', () => {
     expect(link).toHaveAttribute('href', '/collection/bureau')
   })
 
+  it('passes through attributes such as aria-label', () => {
+    render(
+      <Card as="article" aria-label="Georgian mahogany bureau">
+        <p>A slant-front bureau, c. 1780.</p>
+      </Card>,
+    )
+
+    expect(
+      screen.getByRole('article', { name: 'Georgian mahogany bureau' }),
+    ).toBeInTheDocument()
+  })
+
   describe('Card.Title', () => {
     describe('with an href', () => {
       it('renders a heading containing a link to that href', () => {
@@ -99,6 +111,18 @@ describe('Card', () => {
           level: 3,
           name: 'Georgian mahogany bureau',
         }),
+      ).toBeInTheDocument()
+    })
+
+    it('passes through an id so the card can be labelled by its title', () => {
+      render(
+        <section aria-labelledby="bureau-title">
+          <Card.Title id="bureau-title">Georgian mahogany bureau</Card.Title>
+        </section>,
+      )
+
+      expect(
+        screen.getByRole('region', { name: 'Georgian mahogany bureau' }),
       ).toBeInTheDocument()
     })
   })
