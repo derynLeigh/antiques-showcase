@@ -12,6 +12,17 @@ Test levels:
 - **Component:** Vitest + React Testing Library in jsdom. Query by role and accessible name, the way a user or screen reader finds things.
 - **End-to-end:** Playwright against `next build && next start` (not set up yet). For anything that needs a real browser: scrolling, real routing, CSS media queries, server routes.
 
+Conventions (`src/components/Button.test.tsx` is the reference example):
+
+- **Location:** colocate the test with the code it tests, named after it: `Button.tsx` → `Button.test.tsx` in the same folder. Vitest picks up `src/**/*.test.{ts,tsx}`.
+- **Imports:** import the code under test through the `@/` alias.
+- **`describe`:** the outer block is the exported name exactly (`Button`, `formatDate`). Nest a `describe` for each condition that changes the behaviour, written as a phrase that follows the name: `without an href`, `with an href`, `when disabled`.
+- **`it`:** present tense, describing the behaviour someone can observe, with no "should": `renders a link to that href named by its content`, `calls onClick when clicked`. Read together they make a sentence: "Button, with an href, renders a link to that href…".
+- **Queries:** `getByRole` with an accessible `name` first, then `getByLabelText` or `getByText`. Never query by class name or test ID. Use `queryBy…` only to show that something is absent.
+- **Interaction:** use `userEvent.setup()` at the start of each test, not `fireEvent`.
+- **What to test:** the behaviour that later work depends on, and the difference between similar cases (button versus link, not just "it renders"). Don't test styling.
+- **Shape:** arrange, act, assert, with a blank line between each step.
+
 ---
 
 ## Shared components
