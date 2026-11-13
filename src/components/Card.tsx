@@ -18,6 +18,7 @@ export function Card<T extends React.ElementType = 'div'>({
   as,
   className,
   children,
+  ...props
 }: Omit<React.ComponentPropsWithoutRef<T>, 'as' | 'className'> & {
   as?: T
   className?: string
@@ -27,6 +28,7 @@ export function Card<T extends React.ElementType = 'div'>({
   return (
     <Component
       className={clsx(className, 'group relative flex flex-col items-start')}
+      {...props}
     >
       {children}
     </Component>
@@ -52,6 +54,7 @@ Card.Title = function CardTitle<T extends React.ElementType = 'h2'>({
   as,
   href,
   children,
+  ...props
 }: Omit<React.ComponentPropsWithoutRef<T>, 'as' | 'href'> & {
   as?: T
   href?: string
@@ -59,7 +62,10 @@ Card.Title = function CardTitle<T extends React.ElementType = 'h2'>({
   let Component = as ?? 'h2'
 
   return (
-    <Component className="text-base font-semibold tracking-tight text-zinc-800 dark:text-zinc-100">
+    <Component
+      className="text-base font-semibold tracking-tight text-zinc-800 dark:text-zinc-100"
+      {...props}
+    >
       {href ? <Card.Link href={href}>{children}</Card.Link> : children}
     </Component>
   )
