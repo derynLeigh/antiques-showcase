@@ -44,6 +44,20 @@ describe('Button', () => {
       expect(onSubmit).not.toHaveBeenCalled()
     })
 
+    it('submits a surrounding form when given type="submit"', async () => {
+      const user = userEvent.setup()
+      const onSubmit = vi.fn((event: React.SubmitEvent) => event.preventDefault())
+      render(
+        <form onSubmit={onSubmit}>
+          <Button type="submit">Send offer</Button>
+        </form>,
+      )
+
+      await user.click(screen.getByRole('button', { name: 'Send offer' }))
+
+      expect(onSubmit).toHaveBeenCalledTimes(1)
+    })
+
     it('passes through button attributes such as type', () => {
       render(<Button type="submit">Send offer</Button>)
 
