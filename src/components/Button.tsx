@@ -27,7 +27,7 @@ export function Button({
   )
 
   return typeof props.href === 'undefined' ? (
-    <button className={className} {...props} />
+    <button type="button" className={className} {...props} />
   ) : (
     <Link className={className} {...props} />
   )
