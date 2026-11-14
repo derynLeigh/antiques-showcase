@@ -53,7 +53,7 @@ What it does: a compound component. `Card` renders as any element via `as`. `Car
 | The card's accessible link name is the title text only | Characterise | Component |
 | `Card.Cta` is hidden from assistive technology | Characterise | Component |
 | `Card.Eyebrow` with `as="time"` keeps its `dateTime` attribute | Characterise | Component |
-| `Card.Eyebrow` with `decorate` adds a decorative element that is `aria-hidden` | Characterise | Component |
+| `Card.Eyebrow` with `decorate` adds a decorative bar | Skip: purely visual with no text, so a test could only query the markup | |
 | Hover and overlay styling | Skip | |
 
 Notes: these are the building blocks of the collection gallery, so they're worth pinning down early.
