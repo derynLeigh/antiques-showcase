@@ -18,6 +18,17 @@ describe('Header', () => {
   })
 
   describe('desktop navigation', () => {
+    it('lists About and Articles', () => {
+      render(<Header />)
+
+      const links = within(screen.getByRole('navigation')).getAllByRole('link')
+
+      expect(links.map((link) => link.textContent)).toEqual([
+        'About',
+        'Articles',
+      ])
+    })
+
     it('marks the link for the current page', () => {
       pathname.current = '/articles'
       render(<Header />)
@@ -34,6 +45,21 @@ describe('Header', () => {
   })
 
   describe('mobile navigation', () => {
+    it('lists About and Articles', async () => {
+      const user = userEvent.setup()
+      render(<Header />)
+
+      await user.click(screen.getByRole('button', { name: 'Menu' }))
+
+      // Until the navs are labelled, check across both: each page appears
+      // once per nav, and Projects appears in neither.
+      expect(screen.getAllByRole('link', { name: 'About' })).toHaveLength(2)
+      expect(screen.getAllByRole('link', { name: 'Articles' })).toHaveLength(2)
+      expect(
+        screen.queryByRole('link', { name: 'Projects' }),
+      ).not.toBeInTheDocument()
+    })
+
     it('marks the link for the current page', async () => {
       const user = userEvent.setup()
       pathname.current = '/articles'
