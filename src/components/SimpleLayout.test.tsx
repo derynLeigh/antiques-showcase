@@ -36,10 +36,14 @@ describe('SimpleLayout', () => {
       )
 
       const heading = screen.getByRole('heading', { level: 1 })
+      const intro = screen.getByText('Pieces we have for sale.')
       const list = screen.getByRole('list', { name: 'Pieces' })
 
       expect(list).toHaveTextContent('Georgian mahogany bureau')
       expect(heading.compareDocumentPosition(list)).toBe(
+        Node.DOCUMENT_POSITION_FOLLOWING,
+      )
+      expect(intro.compareDocumentPosition(list)).toBe(
         Node.DOCUMENT_POSITION_FOLLOWING,
       )
     })
