@@ -76,7 +76,8 @@ What it does: page header with an `h1` title and intro paragraph; renders a chil
 | --- | --- | --- |
 | Shows the title as the page's level-1 heading | Characterise | Component |
 | Shows the intro text | Characterise | Component |
-| Renders children when given; renders no wrapper when not | Characterise | Component |
+| Renders children after the title and intro | Characterise | Component |
+| Renders no spacing wrapper when there are no children | Skip: the wrapper only adds margin, so a test could only query the markup | |
 
 ### `Section`
 
