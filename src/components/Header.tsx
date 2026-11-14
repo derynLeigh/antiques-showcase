@@ -84,9 +84,16 @@ function MobileNavItem({
   href: string
   children: React.ReactNode
 }) {
+  let isActive = usePathname() === href
+
   return (
     <li>
-      <PopoverButton as={Link} href={href} className="block py-2">
+      <PopoverButton
+        as={Link}
+        href={href}
+        aria-current={isActive ? 'page' : undefined}
+        className="block py-2"
+      >
         {children}
       </PopoverButton>
     </li>
