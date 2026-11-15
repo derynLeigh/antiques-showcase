@@ -1,6 +1,7 @@
 import Link from 'next/link'
 
 import { ContainerInner, ContainerOuter } from '@/components/Container'
+import { siteNavigation } from '@/lib/navigation'
 
 function NavLink({
   href,
@@ -30,8 +31,11 @@ export function Footer() {
                 aria-label="Footer"
                 className="flex flex-wrap justify-center gap-x-6 gap-y-1 text-sm font-medium text-zinc-800 dark:text-zinc-200"
               >
-                <NavLink href="/about">About</NavLink>
-                <NavLink href="/articles">Articles</NavLink>
+                {siteNavigation.map(({ href, label }) => (
+                  <NavLink key={href} href={href}>
+                    {label}
+                  </NavLink>
+                ))}
               </nav>
               <p className="text-sm text-zinc-400 dark:text-zinc-500">
                 &copy; {new Date().getFullYear()} Site Name. All rights
