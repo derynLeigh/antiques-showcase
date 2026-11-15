@@ -8,6 +8,22 @@ import { Header } from '@/components/Header'
 const pathname = vi.hoisted(() => ({ current: '/' }))
 vi.mock('next/navigation', () => ({ usePathname: () => pathname.current }))
 
+// Opens the mobile menu and returns its nav. Both navs are called "Main", and
+// jsdom ignores the CSS that hides one of them, so the mobile nav is found as
+// the one that wasn't there before Menu was clicked.
+async function openMobileNav(user: ReturnType<typeof userEvent.setup>) {
+  const before = screen.getAllByRole('navigation')
+
+  await user.click(screen.getByRole('button', { name: 'Menu' }))
+
+  const opened = screen
+    .getAllByRole('navigation')
+    .filter((nav) => !before.includes(nav))
+  expect(opened).toHaveLength(1)
+
+  return opened[0]
+}
+
 // Header is the site's main navigation. What matters is what a visitor or
 // screen reader can find and use: the links, which one is the current page,
 // and the mobile menu. The scroll-driven avatar animation is covered
@@ -29,7 +45,8 @@ describe('Header', () => {
     it('lists About and Articles', () => {
       render(<Header />)
 
-      const links = within(screen.getByRole('navigation')).getAllByRole('link')
+      const nav = screen.getByRole('navigation', { name: 'Main' })
+      const links = within(nav).getAllByRole('link')
 
       expect(links.map((link) => link.textContent)).toEqual([
         'About',
@@ -41,7 +58,7 @@ describe('Header', () => {
       pathname.current = '/articles'
       render(<Header />)
 
-      const nav = screen.getByRole('navigation')
+      const nav = screen.getByRole('navigation', { name: 'Main' })
 
       expect(
         within(nav).getByRole('link', { name: 'Articles', current: 'page' }),
@@ -57,28 +74,22 @@ describe('Header', () => {
       const user = userEvent.setup()
       render(<Header />)
 
-      await user.click(screen.getByRole('button', { name: 'Menu' }))
+      const nav = await openMobileNav(user)
 
-      // In a browser only one nav is ever shown, so both share the name a
-      // screen reader user hears. jsdom ignores CSS, so here both are present.
-      expect(screen.getAllByRole('navigation', { name: 'Main' })).toHaveLength(
-        2,
-      )
+      expect(nav).toHaveAccessibleName('Main')
     })
 
     it('lists About and Articles', async () => {
       const user = userEvent.setup()
       render(<Header />)
 
-      await user.click(screen.getByRole('button', { name: 'Menu' }))
+      const nav = await openMobileNav(user)
+      const links = within(nav).getAllByRole('link')
 
-      // Until the navs are labelled, check across both: each page appears
-      // once per nav, and Projects appears in neither.
-      expect(screen.getAllByRole('link', { name: 'About' })).toHaveLength(2)
-      expect(screen.getAllByRole('link', { name: 'Articles' })).toHaveLength(2)
-      expect(
-        screen.queryByRole('link', { name: 'Projects' }),
-      ).not.toBeInTheDocument()
+      expect(links.map((link) => link.textContent)).toEqual([
+        'About',
+        'Articles',
+      ])
     })
 
     it('marks the link for the current page', async () => {
@@ -86,17 +97,14 @@ describe('Header', () => {
       pathname.current = '/articles'
       render(<Header />)
 
-      await user.click(screen.getByRole('button', { name: 'Menu' }))
+      const nav = await openMobileNav(user)
 
-      // With the menu open, the desktop and mobile navs are both unnamed
-      // landmarks, so they can't be told apart yet. Every Articles link must
-      // be marked, which means the mobile one as well as the desktop one.
       expect(
-        screen.getAllByRole('link', { name: 'Articles', current: 'page' }),
-      ).toHaveLength(2)
+        within(nav).getByRole('link', { name: 'Articles', current: 'page' }),
+      ).toBeInTheDocument()
       expect(
-        screen.getAllByRole('link', { name: 'About', current: false }),
-      ).toHaveLength(2)
+        within(nav).getByRole('link', { name: 'About', current: false }),
+      ).toBeInTheDocument()
     })
   })
 })
