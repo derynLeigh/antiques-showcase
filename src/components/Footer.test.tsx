@@ -24,12 +24,12 @@ describe('Footer', () => {
   it('puts its links, but not the copyright line, in a navigation landmark labelled Footer', () => {
     render(<Footer />)
 
-    const nav = within(screen.getByRole('contentinfo')).getByRole(
-      'navigation',
-      { name: 'Footer' },
-    )
+    const footer = screen.getByRole('contentinfo')
+    const nav = within(footer).getByRole('navigation', { name: 'Footer' })
 
-    expect(within(nav).getAllByRole('link')).toHaveLength(2)
+    expect(within(nav).getAllByRole('link')).toEqual(
+      within(footer).getAllByRole('link'),
+    )
     expect(within(nav).queryByText(/©/)).not.toBeInTheDocument()
   })
 
