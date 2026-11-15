@@ -19,6 +19,19 @@ describe('Footer', () => {
     ])
   })
 
+  // The header's nav is called "Main" and is on the same page, so this one
+  // needs a different name for screen reader users to tell them apart.
+  it('puts its links in a navigation landmark labelled Footer', () => {
+    render(<Footer />)
+
+    const nav = within(screen.getByRole('contentinfo')).getByRole(
+      'navigation',
+      { name: 'Footer' },
+    )
+
+    expect(within(nav).getAllByRole('link')).toHaveLength(2)
+  })
+
   describe('copyright line', () => {
     beforeEach(() => {
       vi.useFakeTimers({ toFake: ['Date'] })
