@@ -191,17 +191,23 @@ describe('Header', () => {
       },
     )
 
-    it('switches to the other theme when clicked', async () => {
-      const user = userEvent.setup()
-      theme.resolvedTheme = 'dark'
-      render(<Header />)
+    it.each([
+      ['light', 'dark'],
+      ['dark', 'light'],
+    ])(
+      'in the %s theme, switches to %s when clicked',
+      async (resolvedTheme, otherTheme) => {
+        const user = userEvent.setup()
+        theme.resolvedTheme = resolvedTheme
+        render(<Header />)
 
-      await user.click(
-        screen.getByRole('button', { name: 'Switch to light theme' }),
-      )
+        await user.click(
+          screen.getByRole('button', { name: `Switch to ${otherTheme} theme` }),
+        )
 
-      expect(theme.setTheme).toHaveBeenCalledExactlyOnceWith('light')
-    })
+        expect(theme.setTheme).toHaveBeenCalledExactlyOnceWith(otherTheme)
+      },
+    )
   })
 
   describe('link home', () => {
