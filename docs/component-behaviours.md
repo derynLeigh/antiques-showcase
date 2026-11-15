@@ -107,6 +107,7 @@ The most complex component. Several behaviours bundled together:
 | The link for the current page is marked active | Drive: add `aria-current="page"`. Today "active" is only a colour class, which screen readers can't see and tests can only check via class names | Component |
 | Mobile "Menu" button opens a panel containing the same links | Characterise | Component |
 | "Close menu" closes the panel | Characterise | Component |
+| Pressing Escape closes the panel | Characterise | Component |
 | Choosing a link in the mobile panel closes it | Characterise | Component / e2e |
 
 #### Theme toggle

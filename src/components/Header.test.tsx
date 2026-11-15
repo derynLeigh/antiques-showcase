@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -104,6 +104,48 @@ describe('Header', () => {
       ).toBeInTheDocument()
       expect(
         within(nav).getByRole('link', { name: 'About', current: false }),
+      ).toBeInTheDocument()
+    })
+
+    it('opens when Menu is clicked', async () => {
+      const user = userEvent.setup()
+      render(<Header />)
+
+      expect(
+        screen.getByRole('button', { name: 'Menu', expanded: false }),
+      ).toBeInTheDocument()
+
+      await openMobileNav(user)
+
+      expect(
+        screen.getByRole('button', { name: 'Menu', expanded: true }),
+      ).toBeInTheDocument()
+    })
+
+    // The panel fades out, so it leaves the page a moment after closing.
+    it('closes when Close menu is clicked', async () => {
+      const user = userEvent.setup()
+      render(<Header />)
+      const nav = await openMobileNav(user)
+
+      await user.click(screen.getByRole('button', { name: 'Close menu' }))
+
+      await waitFor(() => expect(nav).not.toBeInTheDocument())
+      expect(
+        screen.getByRole('button', { name: 'Menu', expanded: false }),
+      ).toBeInTheDocument()
+    })
+
+    it('closes when Escape is pressed', async () => {
+      const user = userEvent.setup()
+      render(<Header />)
+      const nav = await openMobileNav(user)
+
+      await user.keyboard('{Escape}')
+
+      await waitFor(() => expect(nav).not.toBeInTheDocument())
+      expect(
+        screen.getByRole('button', { name: 'Menu', expanded: false }),
       ).toBeInTheDocument()
     })
   })
