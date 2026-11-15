@@ -18,6 +18,14 @@ describe('Header', () => {
   })
 
   describe('desktop navigation', () => {
+    it('is labelled Main', () => {
+      render(<Header />)
+
+      expect(
+        screen.getByRole('navigation', { name: 'Main' }),
+      ).toBeInTheDocument()
+    })
+
     it('lists About and Articles', () => {
       render(<Header />)
 
@@ -45,6 +53,19 @@ describe('Header', () => {
   })
 
   describe('mobile navigation', () => {
+    it('is labelled Main', async () => {
+      const user = userEvent.setup()
+      render(<Header />)
+
+      await user.click(screen.getByRole('button', { name: 'Menu' }))
+
+      // In a browser only one nav is ever shown, so both share the name a
+      // screen reader user hears. jsdom ignores CSS, so here both are present.
+      expect(screen.getAllByRole('navigation', { name: 'Main' })).toHaveLength(
+        2,
+      )
+    })
+
     it('lists About and Articles', async () => {
       const user = userEvent.setup()
       render(<Header />)
