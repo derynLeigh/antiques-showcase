@@ -123,8 +123,8 @@ The most complex component. Several behaviours bundled together:
 
 | Behaviour | Kind | Level |
 | --- | --- | --- |
-| On the home page, shows the large avatar; elsewhere, the small one | Characterise | Component |
-| Avatar links home with accessible name "Home" | Characterise | Component |
+| Every page has exactly one link home, with accessible name "Home" | Characterise | Component |
+| On the home page the avatar is large; elsewhere it is small | Skip: only the size differs, so a test could only check class names | |
 
 #### Scroll-driven header and avatar animation
 

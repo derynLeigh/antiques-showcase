@@ -1,5 +1,6 @@
 import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { renderToString } from 'react-dom/server'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { Header } from '@/components/Header'
@@ -7,6 +8,13 @@ import { Header } from '@/components/Header'
 // Each test sets the current page by changing pathname.current.
 const pathname = vi.hoisted(() => ({ current: '/' }))
 vi.mock('next/navigation', () => ({ usePathname: () => pathname.current }))
+
+// Each test can set the resolved theme and check what setTheme was called with.
+const theme = vi.hoisted(() => ({
+  resolvedTheme: 'light' as string | undefined,
+  setTheme: vi.fn(),
+}))
+vi.mock('next-themes', () => ({ useTheme: () => theme }))
 
 // Opens the mobile menu and returns its nav. Both navs are called "Main", and
 // jsdom ignores the CSS that hides one of them, so the mobile nav is found as
@@ -26,11 +34,13 @@ async function openMobileNav(user: ReturnType<typeof userEvent.setup>) {
 
 // Header is the site's main navigation. What matters is what a visitor or
 // screen reader can find and use: the links, which one is the current page,
-// and the mobile menu. The scroll-driven avatar animation is covered
-// separately once its maths is extracted; see docs/component-behaviours.md.
+// the mobile menu, the theme toggle and the link home. The scroll-driven
+// avatar animation is not tested here; see docs/component-behaviours.md.
 describe('Header', () => {
   beforeEach(() => {
     pathname.current = '/'
+    theme.resolvedTheme = 'light'
+    theme.setTheme.mockClear()
   })
 
   describe('desktop navigation', () => {
@@ -147,6 +157,70 @@ describe('Header', () => {
       expect(
         screen.getByRole('button', { name: 'Menu', expanded: false }),
       ).toBeInTheDocument()
+    })
+  })
+
+  describe('theme toggle', () => {
+    // The server can't know the visitor's theme, so the first render must use
+    // a neutral label or hydration would mismatch. render() runs effects at
+    // once, so the server render is checked as HTML, the way Next produces it.
+    it('is labelled "Toggle theme" when rendered on the server', () => {
+      const container = document.createElement('div')
+      container.innerHTML = renderToString(<Header />)
+      document.body.append(container)
+
+      try {
+        expect(
+          within(container).getByRole('button', { name: 'Toggle theme' }),
+        ).toBeInTheDocument()
+      } finally {
+        container.remove()
+      }
+    })
+
+    it.each([
+      ['light', 'Switch to dark theme'],
+      ['dark', 'Switch to light theme'],
+    ])(
+      'in the %s theme, is labelled "%s" once mounted',
+      (resolvedTheme, label) => {
+        theme.resolvedTheme = resolvedTheme
+        render(<Header />)
+
+        expect(screen.getByRole('button', { name: label })).toBeInTheDocument()
+      },
+    )
+
+    it.each([
+      ['light', 'dark'],
+      ['dark', 'light'],
+    ])(
+      'in the %s theme, switches to %s when clicked',
+      async (resolvedTheme, otherTheme) => {
+        const user = userEvent.setup()
+        theme.resolvedTheme = resolvedTheme
+        render(<Header />)
+
+        await user.click(
+          screen.getByRole('button', { name: `Switch to ${otherTheme} theme` }),
+        )
+
+        expect(theme.setTheme).toHaveBeenCalledExactlyOnceWith(otherTheme)
+      },
+    )
+  })
+
+  describe('link home', () => {
+    // On the home page it's the large avatar, elsewhere the small one. The
+    // size is styling; what matters is that every page has exactly one.
+    it.each(['/', '/about'])('appears once on %s', (path) => {
+      pathname.current = path
+      render(<Header />)
+
+      expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute(
+        'href',
+        '/',
+      )
     })
   })
 })
