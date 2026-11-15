@@ -3,11 +3,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { Footer } from '@/components/Footer'
 
-// Footer repeats the site's pages and shows the copyright line. These tests
-// characterise it as it is today, including the Projects link the header has
-// already dropped; that changes in a later red-green cycle.
+// Footer repeats the site's pages and shows the copyright line. It lists the
+// same pages as the header, so Projects is gone from both.
 describe('Footer', () => {
-  it('lists About, Articles and Projects as links', () => {
+  it('lists About and Articles as links', () => {
     render(<Footer />)
 
     const links = within(screen.getByRole('contentinfo')).getAllByRole('link')
@@ -17,7 +16,6 @@ describe('Footer', () => {
     ).toEqual([
       ['About', '/about'],
       ['Articles', '/articles'],
-      ['Projects', '/projects'],
     ])
   })
 
