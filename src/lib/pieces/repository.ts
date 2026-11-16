@@ -1,6 +1,12 @@
 import type { Piece, PieceMeta } from '@/lib/piece'
 import type { PieceSource } from '@/lib/pieces/source'
 
+// Sorts pieces newest addedOn first. addedOn is an ISO date (2026-11-10), so
+// comparing the strings compares the dates.
+function newestFirst(a: Piece, b: Piece) {
+  return b.addedOn.localeCompare(a.addedOn)
+}
+
 export function createPieceRepository(source: PieceSource) {
   async function getAllPieces(): Promise<Piece[]> {
     const [raws, order] = await Promise.all([source.list(), source.order()])
@@ -13,14 +19,13 @@ export function createPieceRepository(source: PieceSource) {
     }))
 
     // Listed pieces come first, in the curator's order. Pieces not yet
-    // placed follow, newest first. addedOn is an ISO date, so comparing the
-    // strings compares the dates.
+    // placed follow, newest first.
     const listed = pieces
       .filter((piece) => order.includes(piece.slug))
       .toSorted((a, b) => order.indexOf(a.slug) - order.indexOf(b.slug))
     const unplaced = pieces
       .filter((piece) => !order.includes(piece.slug))
-      .toSorted((a, b) => b.addedOn.localeCompare(a.addedOn))
+      .toSorted(newestFirst)
 
     return [...listed, ...unplaced]
   }
@@ -34,9 +39,7 @@ export function createPieceRepository(source: PieceSource) {
   // Ignores the curator's order: "recently added" is about when, not where.
   async function getRecentlyAdded(limit: number): Promise<Piece[]> {
     const pieces = await getAllPieces()
-    return pieces
-      .toSorted((a, b) => b.addedOn.localeCompare(a.addedOn))
-      .slice(0, limit)
+    return pieces.toSorted(newestFirst).slice(0, limit)
   }
 
   return { getAllPieces, getPiece, getRecentlyAdded }
