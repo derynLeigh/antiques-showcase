@@ -31,8 +31,12 @@ export function createPieceRepository(source: PieceSource) {
     return pieces.find((piece) => piece.slug === slug)
   }
 
+  // Ignores the curator's order: "recently added" is about when, not where.
   async function getRecentlyAdded(limit: number): Promise<Piece[]> {
-    return []
+    const pieces = await getAllPieces()
+    return pieces
+      .toSorted((a, b) => b.addedOn.localeCompare(a.addedOn))
+      .slice(0, limit)
   }
 
   return { getAllPieces, getPiece, getRecentlyAdded }
