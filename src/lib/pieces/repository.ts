@@ -42,8 +42,11 @@ export function createPieceRepository(source: PieceSource) {
     return pieces.toSorted(newestFirst).slice(0, limit)
   }
 
+  // Keeps getAllPieces' order, so featured pieces appear as the curator placed
+  // them.
   async function getFeatured(): Promise<Piece[]> {
-    return []
+    const pieces = await getAllPieces()
+    return pieces.filter((piece) => piece.featured)
   }
 
   return { getAllPieces, getPiece, getRecentlyAdded, getFeatured }
