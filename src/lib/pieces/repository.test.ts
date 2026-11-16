@@ -121,4 +121,25 @@ describe('createPieceRepository', () => {
       ])
     })
   })
+
+  describe('getFeatured', () => {
+    // The source lists the featured pieces in the opposite order to the
+    // curator, so the test shows which order wins.
+    it("returns only featured pieces, in the curator's order", async () => {
+      const source = inMemoryPieceSource(
+        [
+          rawPiece('tea-caddy', { featured: true }),
+          rawPiece('oak-coffer', { featured: false }),
+          rawPiece('connie', { featured: true }),
+          rawPiece('brass-lantern', { featured: false }),
+        ],
+        ['connie', 'oak-coffer', 'tea-caddy', 'brass-lantern'],
+      )
+      const { getFeatured } = createPieceRepository(source)
+
+      const pieces = await getFeatured()
+
+      expect(slugs(pieces)).toEqual(['connie', 'tea-caddy'])
+    })
+  })
 })

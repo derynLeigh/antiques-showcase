@@ -42,5 +42,9 @@ export function createPieceRepository(source: PieceSource) {
     return pieces.toSorted(newestFirst).slice(0, limit)
   }
 
-  return { getAllPieces, getPiece, getRecentlyAdded }
+  async function getFeatured(): Promise<Piece[]> {
+    return []
+  }
+
+  return { getAllPieces, getPiece, getRecentlyAdded, getFeatured }
 }
