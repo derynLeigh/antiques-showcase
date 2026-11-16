@@ -25,5 +25,9 @@ export function createPieceRepository(source: PieceSource) {
 
       return [...listed, ...unplaced]
     },
+
+    async getPiece(slug: string): Promise<Piece | undefined> {
+      return undefined
+    },
   }
 }

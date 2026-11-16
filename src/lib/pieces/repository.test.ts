@@ -61,4 +61,21 @@ describe('createPieceRepository', () => {
       expect(slugs(pieces)).toEqual(['tea-caddy', 'connie', 'oak-coffer'])
     })
   })
+
+  describe('getPiece', () => {
+    it('returns the piece with that slug', async () => {
+      const source = inMemoryPieceSource([
+        rawPiece('tea-caddy', { title: 'Georgian silver tea caddy' }),
+        rawPiece('connie', { title: "Lockheed Constellation 'Connie' model" }),
+      ])
+      const { getPiece } = createPieceRepository(source)
+
+      const piece = await getPiece('connie')
+
+      expect(piece).toMatchObject({
+        slug: 'connie',
+        title: "Lockheed Constellation 'Connie' model",
+      })
+    })
+  })
 })
