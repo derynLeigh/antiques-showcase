@@ -13,8 +13,17 @@ export function createPieceRepository(source: PieceSource) {
         Body,
       }))
 
-      const position = (piece: Piece) => order.indexOf(piece.slug)
-      return pieces.toSorted((a, b) => position(a) - position(b))
+      // Listed pieces come first, in the curator's order. Pieces not yet
+      // placed follow, newest first. addedOn is an ISO date, so comparing the
+      // strings compares the dates.
+      const listed = pieces
+        .filter((piece) => order.includes(piece.slug))
+        .toSorted((a, b) => order.indexOf(a.slug) - order.indexOf(b.slug))
+      const unplaced = pieces
+        .filter((piece) => !order.includes(piece.slug))
+        .toSorted((a, b) => b.addedOn.localeCompare(a.addedOn))
+
+      return [...listed, ...unplaced]
     },
   }
 }
