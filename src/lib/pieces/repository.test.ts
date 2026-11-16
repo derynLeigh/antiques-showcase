@@ -43,5 +43,22 @@ describe('createPieceRepository', () => {
 
       expect(slugs(pieces)).toEqual(['oak-coffer', 'connie', 'tea-caddy'])
     })
+
+    // A new piece shouldn't vanish just because it hasn't been placed yet.
+    it('puts pieces missing from the order list after the listed ones, newest addedOn first', async () => {
+      const source = inMemoryPieceSource(
+        [
+          rawPiece('oak-coffer', { addedOn: '2026-10-01' }),
+          rawPiece('tea-caddy'),
+          rawPiece('connie', { addedOn: '2026-11-10' }),
+        ],
+        ['tea-caddy'],
+      )
+      const { getAllPieces } = createPieceRepository(source)
+
+      const pieces = await getAllPieces()
+
+      expect(slugs(pieces)).toEqual(['tea-caddy', 'connie', 'oak-coffer'])
+    })
   })
 })
