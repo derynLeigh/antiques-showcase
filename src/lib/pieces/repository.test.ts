@@ -77,5 +77,15 @@ describe('createPieceRepository', () => {
         title: "Lockheed Constellation 'Connie' model",
       })
     })
+
+    // The piece page shows the not-found page when this is undefined.
+    it('returns undefined for a slug that does not exist', async () => {
+      const source = inMemoryPieceSource([rawPiece('tea-caddy')])
+      const { getPiece } = createPieceRepository(source)
+
+      const piece = await getPiece('no-such-piece')
+
+      expect(piece).toBeUndefined()
+    })
   })
 })
