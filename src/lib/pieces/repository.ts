@@ -31,5 +31,9 @@ export function createPieceRepository(source: PieceSource) {
     return pieces.find((piece) => piece.slug === slug)
   }
 
-  return { getAllPieces, getPiece }
+  async function getRecentlyAdded(limit: number): Promise<Piece[]> {
+    return []
+  }
+
+  return { getAllPieces, getPiece, getRecentlyAdded }
 }

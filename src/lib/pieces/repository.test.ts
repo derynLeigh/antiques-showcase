@@ -88,4 +88,37 @@ describe('createPieceRepository', () => {
       expect(piece).toBeUndefined()
     })
   })
+
+  describe('getRecentlyAdded', () => {
+    // The curator's order is deliberately different from date order, so the
+    // test shows that "recently added" ignores it.
+    it('returns at most the given number of pieces, newest addedOn first', async () => {
+      const source = inMemoryPieceSource(
+        [
+          rawPiece('oak-coffer', { addedOn: '2026-07-01' }),
+          rawPiece('connie', { addedOn: '2026-11-10' }),
+          rawPiece('tea-caddy', { addedOn: '2026-09-15' }),
+          rawPiece('pewter-tankard', { addedOn: '2026-10-01' }),
+          rawPiece('brass-lantern', { addedOn: '2026-08-20' }),
+        ],
+        [
+          'oak-coffer',
+          'connie',
+          'tea-caddy',
+          'pewter-tankard',
+          'brass-lantern',
+        ],
+      )
+      const { getRecentlyAdded } = createPieceRepository(source)
+
+      const pieces = await getRecentlyAdded(4)
+
+      expect(slugs(pieces)).toEqual([
+        'connie',
+        'pewter-tankard',
+        'tea-caddy',
+        'brass-lantern',
+      ])
+    })
+  })
 })
