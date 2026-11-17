@@ -1,5 +1,6 @@
-import { pieceMeta, type Piece } from '@/lib/piece'
+import type { Piece } from '@/lib/piece'
 import type { PieceSource } from '@/lib/pieces/source'
+import { validate } from '@/lib/pieces/validate'
 
 // Sorts pieces newest addedOn first. addedOn is an ISO date (2026-11-10), so
 // comparing the strings compares the dates.
@@ -7,73 +8,23 @@ function newestFirst(a: Piece, b: Piece) {
   return b.addedOn.localeCompare(a.addedOn)
 }
 
-// Writes a field path the way it would appear in code, such as images[1].alt,
-// so the error points straight at the place to fix.
-function formatPath(path: PropertyKey[]) {
-  return path.reduce<string>((text, key) => {
-    if (typeof key === 'number') return `${text}[${key}]`
-    return text ? `${text}.${String(key)}` : String(key)
-  }, '')
+// Listed pieces come first, in the curator's order. Pieces not yet placed
+// follow, newest first.
+function inCuratorOrder(pieces: Piece[], order: string[]): Piece[] {
+  const listed = pieces
+    .filter((piece) => order.includes(piece.slug))
+    .toSorted((a, b) => order.indexOf(a.slug) - order.indexOf(b.slug))
+  const unplaced = pieces
+    .filter((piece) => !order.includes(piece.slug))
+    .toSorted(newestFirst)
+
+  return [...listed, ...unplaced]
 }
 
 export function createPieceRepository(source: PieceSource) {
   async function getAllPieces(): Promise<Piece[]> {
     const [raws, order] = await Promise.all([source.list(), source.order()])
-
-    // Nothing from a source is trusted until it matches the schema. Parsing
-    // also fills in defaults, such as featured: false. Every problem in every
-    // piece is collected, so one build reports everything there is to fix.
-    const pieces: Piece[] = []
-    const problems: string[] = []
-
-    const slugCounts = new Map<string, number>()
-    for (const { slug } of raws) {
-      slugCounts.set(slug, (slugCounts.get(slug) ?? 0) + 1)
-    }
-    for (const [slug, count] of slugCounts) {
-      if (count > 1) {
-        problems.push(`  ${slug}: slug is used by more than one piece`)
-      }
-    }
-
-    // A slug in the order list with no piece is almost always a typo.
-    for (const slug of order) {
-      if (!slugCounts.has(slug)) {
-        problems.push(
-          `  ${slug}: is in the order list, but no piece has that slug`,
-        )
-      }
-    }
-
-    for (const { slug, meta, Body } of raws) {
-      const result = pieceMeta.safeParse(meta)
-      if (result.success) {
-        pieces.push({ ...result.data, slug, Body })
-      } else {
-        for (const issue of result.error.issues) {
-          problems.push(`  ${slug}: ${formatPath(issue.path)} ${issue.message}`)
-        }
-      }
-    }
-
-    if (problems.length > 0) {
-      const heading =
-        problems.length === 1
-          ? 'The collection has 1 problem:'
-          : `The collection has ${problems.length} problems:`
-      throw new Error(`${heading}\n${problems.join('\n')}`)
-    }
-
-    // Listed pieces come first, in the curator's order. Pieces not yet
-    // placed follow, newest first.
-    const listed = pieces
-      .filter((piece) => order.includes(piece.slug))
-      .toSorted((a, b) => order.indexOf(a.slug) - order.indexOf(b.slug))
-    const unplaced = pieces
-      .filter((piece) => !order.includes(piece.slug))
-      .toSorted(newestFirst)
-
-    return [...listed, ...unplaced]
+    return inCuratorOrder(validate(raws, order), order)
   }
 
   // Goes through getAllPieces so every lookup gets the same checks.
