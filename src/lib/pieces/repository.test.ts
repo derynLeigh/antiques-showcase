@@ -127,21 +127,24 @@ describe('createPieceRepository', () => {
 
       expect(error).toBeInstanceOf(Error)
       const { message } = error as Error
-      expect(message).toMatch(/^2 pieces have problems:/)
+      // Three problems across two pieces: the heading counts problems.
+      expect(message).toMatch(/^The collection has 3 problems:/)
       expect(message).toMatch(/tea-caddy: images\[0\]\.alt/)
       expect(message).toMatch(/oak-coffer: made/)
       expect(message).toMatch(/oak-coffer: images/)
       expect(message).not.toMatch(/connie/)
     })
 
-    it('words the heading in the singular when one piece has problems', async () => {
+    it('words the heading in the singular when there is one problem', async () => {
       const source = inMemoryPieceSource([
         rawPiece('connie'),
         rawPiece('oak-coffer', { images: [] }),
       ])
       const { getAllPieces } = createPieceRepository(source)
 
-      await expect(getAllPieces()).rejects.toThrow(/^1 piece has problems:/)
+      await expect(getAllPieces()).rejects.toThrow(
+        /^The collection has 1 problem:/,
+      )
     })
 
     it.each([
