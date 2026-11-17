@@ -13,7 +13,7 @@ const looksLikeFileName = /^\S+\.(jpe?g|png|gif|webp|avif|heic|tiff?)$/i
 const image = z.object({
   src: z.object({ src: z.string(), width: z.number(), height: z.number() }),
   alt: z
-    .string()
+    .string({ error: 'must describe the photo' })
     .trim()
     .min(1, 'must describe the photo')
     .refine((alt) => !looksLikeFileName.test(alt), {
