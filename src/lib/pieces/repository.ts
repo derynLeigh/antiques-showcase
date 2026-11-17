@@ -42,9 +42,11 @@ export function createPieceRepository(source: PieceSource) {
     }
 
     if (brokenPieces > 0) {
-      throw new Error(
-        `${brokenPieces} pieces have problems:\n${problems.join('\n')}`,
-      )
+      const heading =
+        brokenPieces === 1
+          ? '1 piece has problems:'
+          : `${brokenPieces} pieces have problems:`
+      throw new Error(`${heading}\n${problems.join('\n')}`)
     }
 
     // Listed pieces come first, in the curator's order. Pieces not yet
