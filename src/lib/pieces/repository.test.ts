@@ -202,6 +202,11 @@ describe('createPieceRepository', () => {
         'images[0].caption must be text',
       ],
       [
+        'a photo has no alt text at all',
+        { images: [{ src: hallmarkPhoto.src }] },
+        'images[0].alt must describe the photo',
+      ],
+      [
         'a source has no label',
         { sources: [{ url: 'https://example.com' }] },
         'sources[0].label is required',
