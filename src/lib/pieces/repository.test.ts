@@ -262,6 +262,21 @@ describe('createPieceRepository', () => {
         'tea-cady: is in the order list, but no piece has that slug',
       )
     })
+
+    it('reports a missing slug once, however often the order list names it', async () => {
+      const source = inMemoryPieceSource(
+        [rawPiece('tea-caddy'), rawPiece('connie')],
+        ['tea-cady', 'connie', 'tea-cady'],
+      )
+      const { getAllPieces } = createPieceRepository(source)
+
+      const error = await getAllPieces().catch((caught: unknown) => caught)
+
+      expect(error).toBeInstanceOf(Error)
+      const { message } = error as Error
+      expect(message).toMatch(/^The collection has 1 problem:/)
+      expect(message.match(/tea-cady:/g)).toHaveLength(1)
+    })
   })
 
   describe('getPiece', () => {
