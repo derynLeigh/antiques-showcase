@@ -34,9 +34,7 @@ export function createPieceRepository(source: PieceSource) {
       } else {
         brokenPieces++
         for (const issue of result.error.issues) {
-          problems.push(
-            `  ${slug}: ${formatPath(issue.path)}: ${issue.message}`,
-          )
+          problems.push(`  ${slug}: ${formatPath(issue.path)} ${issue.message}`)
         }
       }
     }

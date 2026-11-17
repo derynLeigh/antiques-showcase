@@ -19,12 +19,14 @@ const image = z.object({
 export const pieceMeta = z.object({
   title: z.string().min(1),
   summary: z.string().min(1),          // one line: cards, link previews, RSS
-  made: z.string().min(1),             // as he'd say it: "c. 1780", "1950s"
+  made: z.string({ error: 'is required' }).min(1, 'is required'), // as he'd say it: "c. 1780", "1950s"
   origin: z.string().optional(),
   maker: z.string().optional(),
   materials: z.string().optional(),
   dimensions: z.string().optional(),   // free text: "22 inch wingspan"
-  images: z.array(image).min(1),       // the first is the hero
+  images: z
+    .array(image, { error: 'must have at least one photo' })
+    .min(1, 'must have at least one photo'), // the first is the hero
   openToOffers: z.boolean(),
   featured: z.boolean().default(false),
   addedOn: z.iso.date(),               // when it joined the site
