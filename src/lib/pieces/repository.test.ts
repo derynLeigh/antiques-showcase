@@ -6,8 +6,12 @@ import { createPieceRepository } from '@/lib/pieces/repository'
 import type { RawPiece } from '@/lib/pieces/source'
 
 // A raw piece whose metadata passes validation. Each test overrides only the
-// fields it cares about, so what the test is about stays visible.
-function rawPiece(slug: string, meta: Partial<PieceMeta> = {}): RawPiece {
+// fields it cares about, so what the test is about stays visible. Overrides
+// can be any value, because a source hands over unchecked data.
+function rawPiece(
+  slug: string,
+  meta: { [Field in keyof PieceMeta]?: unknown } = {},
+): RawPiece {
   return {
     slug,
     meta: {
@@ -151,6 +155,76 @@ describe('createPieceRepository', () => {
         'oak-coffer: made is required',
       )
     })
+
+    // Every message reads as plain English after the field name, so the
+    // curator knows what to change without knowing Zod.
+    const hallmarkPhoto = {
+      src: { src: '/hallmark.jpg', width: 100, height: 100 },
+      alt: 'Close-up of the London hallmark',
+    }
+    it.each<[string, Record<string, unknown>, string]>([
+      ['title is missing', { title: undefined }, 'title is required'],
+      ['title is empty', { title: '' }, 'title is required'],
+      ['summary is missing', { summary: undefined }, 'summary is required'],
+      ['summary is empty', { summary: '' }, 'summary is required'],
+      [
+        'openToOffers is missing',
+        { openToOffers: undefined },
+        'openToOffers must be true or false',
+      ],
+      [
+        'openToOffers is text',
+        { openToOffers: 'yes' },
+        'openToOffers must be true or false',
+      ],
+      [
+        'featured is text',
+        { featured: 'yes' },
+        'featured must be true or false',
+      ],
+      [
+        'addedOn is missing',
+        { addedOn: undefined },
+        'addedOn must be a date like 2026-11-15',
+      ],
+      [
+        'addedOn is written the British way',
+        { addedOn: '15/11/2026' },
+        'addedOn must be a date like 2026-11-15',
+      ],
+      ['origin is a number', { origin: 1780 }, 'origin must be text'],
+      ['maker is a number', { maker: 1 }, 'maker must be text'],
+      ['materials is a number', { materials: 1 }, 'materials must be text'],
+      ['dimensions is a number', { dimensions: 22 }, 'dimensions must be text'],
+      [
+        'a caption is a number',
+        { images: [{ ...hallmarkPhoto, caption: 1784 }] },
+        'images[0].caption must be text',
+      ],
+      [
+        'a source has no label',
+        { sources: [{ url: 'https://example.com' }] },
+        'sources[0].label is required',
+      ],
+      [
+        'a source label is empty',
+        { sources: [{ label: '', url: 'https://example.com' }] },
+        'sources[0].label is required',
+      ],
+      [
+        'a source link is not a web address',
+        { sources: [{ label: 'Hallmark guide', url: 'hallmarks page' }] },
+        'sources[0].url must be a full web address, like https://example.com',
+      ],
+    ])(
+      'explains the problem in plain English when %s',
+      async (_case, meta, line) => {
+        const source = inMemoryPieceSource([rawPiece('tea-caddy', meta)])
+        const { getAllPieces } = createPieceRepository(source)
+
+        await expect(getAllPieces()).rejects.toThrow(`tea-caddy: ${line}`)
+      },
+    )
   })
 
   describe('getPiece', () => {
