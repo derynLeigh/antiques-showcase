@@ -7,6 +7,15 @@ function newestFirst(a: Piece, b: Piece) {
   return b.addedOn.localeCompare(a.addedOn)
 }
 
+// Writes a field path the way it would appear in code, such as images[1].alt,
+// so the error points straight at the place to fix.
+function formatPath(path: PropertyKey[]) {
+  return path.reduce<string>((text, key) => {
+    if (typeof key === 'number') return `${text}[${key}]`
+    return text ? `${text}.${String(key)}` : String(key)
+  }, '')
+}
+
 export function createPieceRepository(source: PieceSource) {
   async function getAllPieces(): Promise<Piece[]> {
     const [raws, order] = await Promise.all([source.list(), source.order()])
@@ -17,7 +26,7 @@ export function createPieceRepository(source: PieceSource) {
       const result = pieceMeta.safeParse(meta)
       if (!result.success) {
         const [issue] = result.error.issues
-        throw new Error(`${slug}: ${issue.path.join('.')}: ${issue.message}`)
+        throw new Error(`${slug}: ${formatPath(issue.path)}: ${issue.message}`)
       }
       return { ...result.data, slug, Body }
     })

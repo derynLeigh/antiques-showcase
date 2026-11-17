@@ -1,8 +1,18 @@
 import { z } from 'zod'
 
+// A single word ending in an image extension, such as IMG_2231.jpg: the file
+// name left in place of a description.
+const looksLikeFileName = /^\S+\.(jpe?g|png|gif|webp|avif|heic|tiff?)$/i
+
 const image = z.object({
   src: z.object({ src: z.string(), width: z.number(), height: z.number() }),
-  alt: z.string().trim().min(1),
+  alt: z
+    .string()
+    .trim()
+    .min(1, 'must describe the photo')
+    .refine((alt) => !looksLikeFileName.test(alt), {
+      error: (issue) => `must describe the photo (got "${issue.input}")`,
+    }),
   caption: z.string().optional(),
 })
 
