@@ -129,6 +129,16 @@ describe('createPieceRepository', () => {
       expect(message).toMatch(/oak-coffer: images/)
       expect(message).not.toMatch(/connie/)
     })
+
+    it('words the heading in the singular when one piece has problems', async () => {
+      const source = inMemoryPieceSource([
+        rawPiece('connie'),
+        rawPiece('oak-coffer', { images: [] }),
+      ])
+      const { getAllPieces } = createPieceRepository(source)
+
+      await expect(getAllPieces()).rejects.toThrow(/^1 piece has problems:/)
+    })
   })
 
   describe('getPiece', () => {
