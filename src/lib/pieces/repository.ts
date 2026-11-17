@@ -23,27 +23,39 @@ export function createPieceRepository(source: PieceSource) {
     // Nothing from a source is trusted until it matches the schema. Parsing
     // also fills in defaults, such as featured: false. Every problem in every
     // piece is collected, so one build reports everything there is to fix.
+    // Broken pieces are counted by slug, so a repeated slug counts once.
     const pieces: Piece[] = []
     const problems: string[] = []
-    let brokenPieces = 0
+    const brokenSlugs = new Set<string>()
+
+    const slugCounts = new Map<string, number>()
+    for (const { slug } of raws) {
+      slugCounts.set(slug, (slugCounts.get(slug) ?? 0) + 1)
+    }
+    for (const [slug, count] of slugCounts) {
+      if (count > 1) {
+        brokenSlugs.add(slug)
+        problems.push(`  ${slug}: slug is used by more than one piece`)
+      }
+    }
 
     for (const { slug, meta, Body } of raws) {
       const result = pieceMeta.safeParse(meta)
       if (result.success) {
         pieces.push({ ...result.data, slug, Body })
       } else {
-        brokenPieces++
+        brokenSlugs.add(slug)
         for (const issue of result.error.issues) {
           problems.push(`  ${slug}: ${formatPath(issue.path)} ${issue.message}`)
         }
       }
     }
 
-    if (brokenPieces > 0) {
+    if (brokenSlugs.size > 0) {
       const heading =
-        brokenPieces === 1
+        brokenSlugs.size === 1
           ? '1 piece has problems:'
-          : `${brokenPieces} pieces have problems:`
+          : `${brokenSlugs.size} pieces have problems:`
       throw new Error(`${heading}\n${problems.join('\n')}`)
     }
 
