@@ -60,6 +60,18 @@ describe('createPieceRepository', () => {
 
       expect(slugs(pieces)).toEqual(['tea-caddy', 'connie', 'oak-coffer'])
     })
+
+    // A broken piece must fail the build, with a message that says which
+    // piece and which field to fix.
+    it('throws when a piece has no images, naming the slug and the field', async () => {
+      const source = inMemoryPieceSource([
+        rawPiece('tea-caddy'),
+        rawPiece('oak-coffer', { images: [] }),
+      ])
+      const { getAllPieces } = createPieceRepository(source)
+
+      await expect(getAllPieces()).rejects.toThrow(/oak-coffer: images/)
+    })
   })
 
   describe('getPiece', () => {
