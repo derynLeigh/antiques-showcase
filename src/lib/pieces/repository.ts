@@ -1,4 +1,4 @@
-import type { Piece, PieceMeta } from '@/lib/piece'
+import { pieceMeta, type Piece } from '@/lib/piece'
 import type { PieceSource } from '@/lib/pieces/source'
 
 // Sorts pieces newest addedOn first. addedOn is an ISO date (2026-11-10), so
@@ -11,12 +11,16 @@ export function createPieceRepository(source: PieceSource) {
   async function getAllPieces(): Promise<Piece[]> {
     const [raws, order] = await Promise.all([source.list(), source.order()])
 
-    // Not validated yet: tests 7 to 11 drive checking meta against the schema.
-    const pieces = raws.map(({ slug, meta, Body }) => ({
-      ...(meta as PieceMeta),
-      slug,
-      Body,
-    }))
+    // Nothing from a source is trusted until it matches the schema. Parsing
+    // also fills in defaults, such as featured: false.
+    const pieces = raws.map(({ slug, meta, Body }) => {
+      const result = pieceMeta.safeParse(meta)
+      if (!result.success) {
+        const [issue] = result.error.issues
+        throw new Error(`${slug}: ${issue.path.join('.')}: ${issue.message}`)
+      }
+      return { ...result.data, slug, Body }
+    })
 
     // Listed pieces come first, in the curator's order. Pieces not yet
     // placed follow, newest first.
