@@ -230,6 +230,21 @@ describe('createPieceRepository', () => {
         await expect(getAllPieces()).rejects.toThrow(`tea-caddy: ${line}`)
       },
     )
+
+    // Two folders can't share a name, but a CMS source could return the same
+    // slug twice, and then one piece's page would silently hide the other's.
+    it('throws when two pieces share a slug, naming the slug', async () => {
+      const source = inMemoryPieceSource([
+        rawPiece('tea-caddy', { title: 'Georgian silver tea caddy' }),
+        rawPiece('connie'),
+        rawPiece('tea-caddy', { title: 'Victorian tea caddy' }),
+      ])
+      const { getAllPieces } = createPieceRepository(source)
+
+      await expect(getAllPieces()).rejects.toThrow(
+        'tea-caddy: slug is used by more than one piece',
+      )
+    })
   })
 
   describe('getPiece', () => {
