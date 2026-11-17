@@ -139,6 +139,18 @@ describe('createPieceRepository', () => {
 
       await expect(getAllPieces()).rejects.toThrow(/^1 piece has problems:/)
     })
+
+    it.each([
+      ['missing', undefined],
+      ['empty', ''],
+    ])('says "made is required" when made is %s', async (_case, made) => {
+      const source = inMemoryPieceSource([rawPiece('oak-coffer', { made })])
+      const { getAllPieces } = createPieceRepository(source)
+
+      await expect(getAllPieces()).rejects.toThrow(
+        'oak-coffer: made is required',
+      )
+    })
   })
 
   describe('getPiece', () => {
