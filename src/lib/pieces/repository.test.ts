@@ -245,6 +245,20 @@ describe('createPieceRepository', () => {
         'tea-caddy: slug is used by more than one piece',
       )
     })
+
+    // Almost always a typo or a renamed folder. Left alone, the piece it was
+    // meant for would quietly drop to the end of the collection.
+    it('throws when the order list names a slug with no piece, naming that slug', async () => {
+      const source = inMemoryPieceSource(
+        [rawPiece('tea-caddy'), rawPiece('connie')],
+        ['connie', 'tea-cady'],
+      )
+      const { getAllPieces } = createPieceRepository(source)
+
+      await expect(getAllPieces()).rejects.toThrow(
+        'tea-cady: is in the order list, but no piece has that slug',
+      )
+    })
   })
 
   describe('getPiece', () => {
