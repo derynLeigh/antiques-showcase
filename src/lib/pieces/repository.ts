@@ -39,6 +39,16 @@ export function createPieceRepository(source: PieceSource) {
       }
     }
 
+    // A slug in the order list with no piece is almost always a typo.
+    for (const slug of order) {
+      if (!slugCounts.has(slug)) {
+        brokenSlugs.add(slug)
+        problems.push(
+          `  ${slug}: is in the order list, but no piece has that slug`,
+        )
+      }
+    }
+
     for (const { slug, meta, Body } of raws) {
       const result = pieceMeta.safeParse(meta)
       if (result.success) {
