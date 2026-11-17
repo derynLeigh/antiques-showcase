@@ -40,7 +40,8 @@ function slugProblems(raws: RawPiece[], order: string[]): string[] {
     }
   }
 
-  for (const slug of order) {
+  // Each missing slug is reported once, however often the list names it.
+  for (const slug of new Set(order)) {
     if (!slugCounts.has(slug)) {
       problems.push(`${slug}: is in the order list, but no piece has that slug`)
     }
