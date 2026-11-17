@@ -72,6 +72,35 @@ describe('createPieceRepository', () => {
 
       await expect(getAllPieces()).rejects.toThrow(/oak-coffer: images/)
     })
+
+    // Alt text is what a screen reader user hears instead of the photo. The
+    // two usual mistakes are leaving it empty and leaving the file name in.
+    it.each([
+      ['empty', ''],
+      ['only spaces', '   '],
+      ['a camera file name', 'IMG_2231.jpg'],
+      ['an upper-case file name', 'DSC_0042.JPG'],
+    ])('throws when alt text is %s, naming the photo', async (_case, alt) => {
+      const source = inMemoryPieceSource([
+        rawPiece('tea-caddy', {
+          images: [
+            {
+              src: { src: '/hero.jpg', width: 100, height: 100 },
+              alt: 'Oval silver tea caddy with a domed lid',
+            },
+            {
+              src: { src: '/hallmark.jpg', width: 100, height: 100 },
+              alt,
+            },
+          ],
+        }),
+      ])
+      const { getAllPieces } = createPieceRepository(source)
+
+      await expect(getAllPieces()).rejects.toThrow(
+        /tea-caddy: images\[1\]\.alt/,
+      )
+    })
   })
 
   describe('getPiece', () => {
