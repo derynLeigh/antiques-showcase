@@ -23,10 +23,8 @@ export function createPieceRepository(source: PieceSource) {
     // Nothing from a source is trusted until it matches the schema. Parsing
     // also fills in defaults, such as featured: false. Every problem in every
     // piece is collected, so one build reports everything there is to fix.
-    // Broken pieces are counted by slug, so a repeated slug counts once.
     const pieces: Piece[] = []
     const problems: string[] = []
-    const brokenSlugs = new Set<string>()
 
     const slugCounts = new Map<string, number>()
     for (const { slug } of raws) {
@@ -34,7 +32,6 @@ export function createPieceRepository(source: PieceSource) {
     }
     for (const [slug, count] of slugCounts) {
       if (count > 1) {
-        brokenSlugs.add(slug)
         problems.push(`  ${slug}: slug is used by more than one piece`)
       }
     }
@@ -42,7 +39,6 @@ export function createPieceRepository(source: PieceSource) {
     // A slug in the order list with no piece is almost always a typo.
     for (const slug of order) {
       if (!slugCounts.has(slug)) {
-        brokenSlugs.add(slug)
         problems.push(
           `  ${slug}: is in the order list, but no piece has that slug`,
         )
@@ -54,18 +50,17 @@ export function createPieceRepository(source: PieceSource) {
       if (result.success) {
         pieces.push({ ...result.data, slug, Body })
       } else {
-        brokenSlugs.add(slug)
         for (const issue of result.error.issues) {
           problems.push(`  ${slug}: ${formatPath(issue.path)} ${issue.message}`)
         }
       }
     }
 
-    if (brokenSlugs.size > 0) {
+    if (problems.length > 0) {
       const heading =
-        brokenSlugs.size === 1
-          ? '1 piece has problems:'
-          : `${brokenSlugs.size} pieces have problems:`
+        problems.length === 1
+          ? 'The collection has 1 problem:'
+          : `The collection has ${problems.length} problems:`
       throw new Error(`${heading}\n${problems.join('\n')}`)
     }
 
