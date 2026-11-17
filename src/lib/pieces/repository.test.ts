@@ -101,6 +101,34 @@ describe('createPieceRepository', () => {
         /tea-caddy: images\[1\]\.alt/,
       )
     })
+
+    // Fixing pieces one build at a time would be miserable, so every problem
+    // in every piece is reported together.
+    it('lists every problem in every broken piece in one error', async () => {
+      const source = inMemoryPieceSource([
+        rawPiece('tea-caddy', {
+          images: [
+            {
+              src: { src: '/hero.jpg', width: 100, height: 100 },
+              alt: 'IMG_2231.jpg',
+            },
+          ],
+        }),
+        rawPiece('connie'),
+        rawPiece('oak-coffer', { made: '', images: [] }),
+      ])
+      const { getAllPieces } = createPieceRepository(source)
+
+      const error = await getAllPieces().catch((caught: unknown) => caught)
+
+      expect(error).toBeInstanceOf(Error)
+      const { message } = error as Error
+      expect(message).toMatch(/^2 pieces have problems:/)
+      expect(message).toMatch(/tea-caddy: images\[0\]\.alt/)
+      expect(message).toMatch(/oak-coffer: made/)
+      expect(message).toMatch(/oak-coffer: images/)
+      expect(message).not.toMatch(/connie/)
+    })
   })
 
   describe('getPiece', () => {
