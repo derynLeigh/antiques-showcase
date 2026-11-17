@@ -21,15 +21,31 @@ export function createPieceRepository(source: PieceSource) {
     const [raws, order] = await Promise.all([source.list(), source.order()])
 
     // Nothing from a source is trusted until it matches the schema. Parsing
-    // also fills in defaults, such as featured: false.
-    const pieces = raws.map(({ slug, meta, Body }) => {
+    // also fills in defaults, such as featured: false. Every problem in every
+    // piece is collected, so one build reports everything there is to fix.
+    const pieces: Piece[] = []
+    const problems: string[] = []
+    let brokenPieces = 0
+
+    for (const { slug, meta, Body } of raws) {
       const result = pieceMeta.safeParse(meta)
-      if (!result.success) {
-        const [issue] = result.error.issues
-        throw new Error(`${slug}: ${formatPath(issue.path)}: ${issue.message}`)
+      if (result.success) {
+        pieces.push({ ...result.data, slug, Body })
+      } else {
+        brokenPieces++
+        for (const issue of result.error.issues) {
+          problems.push(
+            `  ${slug}: ${formatPath(issue.path)}: ${issue.message}`,
+          )
+        }
       }
-      return { ...result.data, slug, Body }
-    })
+    }
+
+    if (brokenPieces > 0) {
+      throw new Error(
+        `${brokenPieces} pieces have problems:\n${problems.join('\n')}`,
+      )
+    }
 
     // Listed pieces come first, in the curator's order. Pieces not yet
     // placed follow, newest first.
