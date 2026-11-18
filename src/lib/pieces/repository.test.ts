@@ -65,6 +65,35 @@ describe('createPieceRepository', () => {
       expect(slugs(pieces)).toEqual(['tea-caddy', 'connie', 'oak-coffer'])
     })
 
+    // The key facts panel leaves out what isn't known. A blank value must
+    // count as not known, or the panel would show a label with nothing after it.
+    it('treats blank optional text as not given', async () => {
+      const source = inMemoryPieceSource([
+        rawPiece('tea-caddy', {
+          origin: '',
+          maker: '   ',
+          materials: '\n',
+          dimensions: ' \t ',
+          images: [
+            {
+              src: { src: '/hero.jpg', width: 100, height: 100 },
+              alt: 'Oval silver tea caddy with a domed lid',
+              caption: '  ',
+            },
+          ],
+        }),
+      ])
+      const { getAllPieces } = createPieceRepository(source)
+
+      const [piece] = await getAllPieces()
+
+      expect(piece.origin).toBeUndefined()
+      expect(piece.maker).toBeUndefined()
+      expect(piece.materials).toBeUndefined()
+      expect(piece.dimensions).toBeUndefined()
+      expect(piece.images[0].caption).toBeUndefined()
+    })
+
     // A broken piece must fail the build, with a message that says which
     // piece and which field to fix.
     it('throws when a piece has no images, naming the slug and the field', async () => {
