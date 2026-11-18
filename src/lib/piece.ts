@@ -35,10 +35,15 @@ const image = z.object({
   caption: optionalText,
 })
 
+// Sources become links on the piece page, so only http and https are allowed:
+// a javascript: link would run script when clicked.
 const source = z.object({
   label: requiredText,
   url: z
-    .url({ error: 'must be a full web address, like https://example.com' })
+    .url({
+      protocol: /^https?$/,
+      error: 'must be a full web address, like https://example.com',
+    })
     .optional(),
 })
 
