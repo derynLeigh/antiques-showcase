@@ -168,8 +168,11 @@ describe('createPieceRepository', () => {
     it.each<[string, Record<string, unknown>, string]>([
       ['title is missing', { title: undefined }, 'title is required'],
       ['title is empty', { title: '' }, 'title is required'],
+      ['title is only spaces', { title: '   ' }, 'title is required'],
       ['summary is missing', { summary: undefined }, 'summary is required'],
       ['summary is empty', { summary: '' }, 'summary is required'],
+      ['summary is only spaces', { summary: '  \n ' }, 'summary is required'],
+      ['made is only spaces', { made: '   ' }, 'made is required'],
       [
         'openToOffers is missing',
         { openToOffers: undefined },
@@ -217,6 +220,11 @@ describe('createPieceRepository', () => {
       [
         'a source label is empty',
         { sources: [{ label: '', url: 'https://example.com' }] },
+        'sources[0].label is required',
+      ],
+      [
+        'a source label is only spaces',
+        { sources: [{ label: '   ', url: 'https://example.com' }] },
         'sources[0].label is required',
       ],
       [
