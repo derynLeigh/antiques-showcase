@@ -261,6 +261,18 @@ describe('createPieceRepository', () => {
         { sources: [{ label: 'Hallmark guide', url: 'hallmarks page' }] },
         'sources[0].url must be a full web address, like https://example.com',
       ],
+      // Sources become links on the piece page. A javascript: link would run
+      // script when clicked, so only http and https are allowed.
+      ...[
+        'javascript:alert(1)',
+        'ftp://example.com/hallmarks.pdf',
+        'mailto:dealer@example.com',
+        'data:text/html,<p>Hallmarks</p>',
+      ].map((url): [string, Record<string, unknown>, string] => [
+        `a source link is ${url.split(':')[0]}:`,
+        { sources: [{ label: 'Hallmark guide', url }] },
+        'sources[0].url must be a full web address, like https://example.com',
+      ]),
     ])(
       'explains the problem in plain English when %s',
       async (_case, meta, line) => {
@@ -268,6 +280,22 @@ describe('createPieceRepository', () => {
         const { getAllPieces } = createPieceRepository(source)
 
         await expect(getAllPieces()).rejects.toThrow(`tea-caddy: ${line}`)
+      },
+    )
+
+    it.each(['http://example.com/hallmarks', 'https://example.com/hallmarks'])(
+      'accepts a source link starting %s',
+      async (url) => {
+        const source = inMemoryPieceSource([
+          rawPiece('tea-caddy', {
+            sources: [{ label: 'Hallmark guide', url }],
+          }),
+        ])
+        const { getAllPieces } = createPieceRepository(source)
+
+        const [piece] = await getAllPieces()
+
+        expect(piece.sources[0].url).toBe(url)
       },
     )
 
