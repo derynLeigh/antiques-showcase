@@ -2,7 +2,11 @@ import { z } from 'zod'
 
 // Each message follows the field name in a build error, so it reads as plain
 // English: "title is required", "dimensions must be text".
-const requiredText = z.string({ error: 'is required' }).min(1, 'is required')
+// Trimmed first, so text that is only spaces counts as missing.
+const requiredText = z
+  .string({ error: 'is required' })
+  .trim()
+  .min(1, 'is required')
 const optionalText = z.string({ error: 'must be text' }).optional()
 const trueOrFalse = z.boolean({ error: 'must be true or false' })
 
