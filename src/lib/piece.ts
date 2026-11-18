@@ -2,12 +2,21 @@ import { z } from 'zod'
 
 // Each message follows the field name in a build error, so it reads as plain
 // English: "title is required", "dimensions must be text".
+
 // Trimmed first, so text that is only spaces counts as missing.
 const requiredText = z
   .string({ error: 'is required' })
   .trim()
   .min(1, 'is required')
-const optionalText = z.string({ error: 'must be text' }).optional()
+
+// Blank text counts as not given, so the key facts panel leaves it out rather
+// than showing a label with nothing after it.
+const optionalText = z
+  .string({ error: 'must be text' })
+  .trim()
+  .transform((text) => (text === '' ? undefined : text))
+  .optional()
+
 const trueOrFalse = z.boolean({ error: 'must be true or false' })
 
 // A single word ending in an image extension, such as IMG_2231.jpg: the file
