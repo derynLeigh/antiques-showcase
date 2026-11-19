@@ -1,5 +1,6 @@
 import path from 'node:path'
 
+import mdx from '@mdx-js/rollup'
 import react from '@vitejs/plugin-react'
 import { defineConfig, type Plugin } from 'vitest/config'
 
@@ -22,7 +23,9 @@ function staticImageImports(): Plugin {
 }
 
 export default defineConfig({
-  plugins: [staticImageImports(), react()],
+  // MDX compiles before the React plugin, so piece files can be imported in
+  // tests the way Next imports them.
+  plugins: [staticImageImports(), { enforce: 'pre', ...mdx() }, react()],
   resolve: {
     tsconfigPaths: true,
   },
