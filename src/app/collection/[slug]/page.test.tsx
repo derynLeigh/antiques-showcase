@@ -4,8 +4,15 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import PiecePage from '@/app/collection/[slug]/page'
 import type { Piece } from '@/lib/piece'
 
-const { getPiece } = vi.hoisted(() => ({ getPiece: vi.fn() }))
+const { getPiece, notFound } = vi.hoisted(() => ({
+  getPiece: vi.fn(),
+  // Next's notFound() throws to stop rendering and show the 404 page.
+  notFound: vi.fn(() => {
+    throw new Error('notFound')
+  }),
+}))
 vi.mock('@/lib/pieces', () => ({ getPiece }))
+vi.mock('next/navigation', () => ({ notFound }))
 
 const teaCaddy: Piece = {
   slug: 'georgian-tea-caddy',
@@ -52,5 +59,17 @@ describe('PiecePage', () => {
     await renderPiecePage('georgian-tea-caddy')
 
     expect(screen.getByText('c. 1780')).toBeInTheDocument()
+  })
+
+  describe('when no piece has that slug', () => {
+    it('shows the not-found page', async () => {
+      getPiece.mockResolvedValue(undefined)
+
+      await expect(
+        PiecePage({ params: Promise.resolve({ slug: 'no-such-piece' }) }),
+      ).rejects.toThrow('notFound')
+      expect(getPiece).toHaveBeenCalledWith('no-such-piece')
+      expect(notFound).toHaveBeenCalled()
+    })
   })
 })
