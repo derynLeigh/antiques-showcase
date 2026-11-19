@@ -241,6 +241,29 @@ describe('createPieceRepository', () => {
         { images: [{ src: hallmarkPhoto.src }] },
         'images[0].alt must describe the photo',
       ],
+      // Photos are imported, so the bundler fills in src. Hand-written or CMS
+      // data could still leave the path blank or the size at zero.
+      ...(
+        [
+          ['a photo path is empty', { src: '', width: 100, height: 100 }],
+          [
+            'a photo path is only spaces',
+            { src: '   ', width: 100, height: 100 },
+          ],
+          [
+            'a photo has no width',
+            { src: '/hallmark.jpg', width: 0, height: 100 },
+          ],
+          [
+            'a photo has a negative height',
+            { src: '/hallmark.jpg', width: 100, height: -5 },
+          ],
+        ] as const
+      ).map(([name, src]): [string, Record<string, unknown>, string] => [
+        name,
+        { images: [{ ...hallmarkPhoto, src }] },
+        'images[0].src must be an imported photo',
+      ]),
       [
         'a source has no label',
         { sources: [{ url: 'https://example.com' }] },
