@@ -23,8 +23,18 @@ const trueOrFalse = z.boolean({ error: 'must be true or false' })
 // name left in place of a description.
 const looksLikeFileName = /^\S+\.(jpe?g|png|gif|webp|avif|heic|tiff?)$/i
 
+// The first photo is the hero, so a blank path or zero size would leave a
+// piece without a usable photo. The check sits on the whole object so the
+// error names images[0].src rather than images[0].src.src.
+const importedPhoto = z
+  .object({ src: z.string(), width: z.number(), height: z.number() })
+  .refine(
+    (photo) => photo.src.trim() !== '' && photo.width > 0 && photo.height > 0,
+    'must be an imported photo',
+  )
+
 const image = z.object({
-  src: z.object({ src: z.string(), width: z.number(), height: z.number() }),
+  src: importedPhoto,
   alt: z
     .string({ error: 'must describe the photo' })
     .trim()
