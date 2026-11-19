@@ -19,6 +19,8 @@ interface MdxPieceSourceOptions {
   //   (slug) => import(`../../content/pieces/${slug}/index.mdx`)
   // because the bundler can only include files from a path it can see.
   importPiece: (slug: string) => Promise<PieceModule>
+  // Slugs in the curator's order, from the folder's order.ts.
+  order: string[]
 }
 
 // Each piece is a folder holding index.mdx and its photos. The folder name is

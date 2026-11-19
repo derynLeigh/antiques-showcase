@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
+import { order } from '@/lib/pieces/__fixtures__/order'
 import { createMdxPieceSource } from '@/lib/pieces/mdx-source'
 
 // Reads the fixtures rather than the real content, so editing a real piece
@@ -8,6 +9,7 @@ import { createMdxPieceSource } from '@/lib/pieces/mdx-source'
 const source = createMdxPieceSource({
   folder: 'src/lib/pieces/__fixtures__',
   importPiece: (slug) => import(`./__fixtures__/${slug}/index.mdx`),
+  order,
 })
 
 describe('createMdxPieceSource', () => {
@@ -34,6 +36,12 @@ describe('createMdxPieceSource', () => {
       const { Body } = connie
       render(<Body />)
       expect(screen.getByText(/sell the glamour of flying/)).toBeInTheDocument()
+    })
+  })
+
+  describe('order', () => {
+    it("returns the slugs from the folder's order list", async () => {
+      expect(await source.order()).toEqual(['georgian-tea-caddy', 'connie'])
     })
   })
 })
