@@ -46,7 +46,9 @@ describe('Button', () => {
 
     it('submits a surrounding form when given type="submit"', async () => {
       const user = userEvent.setup()
-      const onSubmit = vi.fn((event: React.SubmitEvent) => event.preventDefault())
+      const onSubmit = vi.fn((event: React.SubmitEvent) =>
+        event.preventDefault(),
+      )
       render(
         <form onSubmit={onSubmit}>
           <Button type="submit">Send offer</Button>
