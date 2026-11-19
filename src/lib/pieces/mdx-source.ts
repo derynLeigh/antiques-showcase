@@ -28,6 +28,7 @@ interface MdxPieceSourceOptions {
 export function createMdxPieceSource({
   folder,
   importPiece,
+  order,
 }: MdxPieceSourceOptions): PieceSource {
   async function list(): Promise<RawPiece[]> {
     const files = await glob('*/index.mdx', { cwd: folder })
@@ -43,6 +44,6 @@ export function createMdxPieceSource({
 
   return {
     list,
-    order: async () => [],
+    order: async () => order,
   }
 }
