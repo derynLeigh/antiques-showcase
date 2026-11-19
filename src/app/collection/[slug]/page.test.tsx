@@ -1,7 +1,10 @@
 import { render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import PiecePage, { generateStaticParams } from '@/app/collection/[slug]/page'
+import PiecePage, {
+  dynamicParams,
+  generateStaticParams,
+} from '@/app/collection/[slug]/page'
 import type { Piece } from '@/lib/piece'
 
 const { getAllPieces, getPiece, notFound } = vi.hoisted(() => ({
@@ -85,5 +88,14 @@ describe('generateStaticParams', () => {
       { slug: 'georgian-tea-caddy' },
       { slug: 'connie' },
     ])
+  })
+})
+
+// Next's default renders an unknown slug on demand, which would read the
+// content folder on the server at request time. Turned off, an address that
+// wasn't built is a 404 straight away.
+describe('dynamicParams', () => {
+  it('is false, so only pieces built ahead of time have pages', () => {
+    expect(dynamicParams).toBe(false)
   })
 })
