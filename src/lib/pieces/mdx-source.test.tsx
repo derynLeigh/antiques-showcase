@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 
 import { order } from '@/lib/pieces/__fixtures__/order'
 import { createMdxPieceSource } from '@/lib/pieces/mdx-source'
+import { createPieceRepository } from '@/lib/pieces/repository'
 
 // Reads the fixtures rather than the real content, so editing a real piece
 // never breaks a test.
@@ -42,6 +43,26 @@ describe('createMdxPieceSource', () => {
   describe('order', () => {
     it("returns the slugs from the folder's order list", async () => {
       expect(await source.order()).toEqual(['georgian-tea-caddy', 'connie'])
+    })
+  })
+
+  // The source and repository tests each use stand-ins for the other side.
+  // This checks real MDX files, with imported photos, pass validation.
+  describe('with the piece repository', () => {
+    it("gives valid pieces, with their photos, in the curator's order", async () => {
+      const { getAllPieces } = createPieceRepository(source)
+
+      const pieces = await getAllPieces()
+
+      expect(pieces.map((piece) => piece.slug)).toEqual([
+        'georgian-tea-caddy',
+        'connie',
+      ])
+      expect(pieces[0].images[0].src).toEqual({
+        src: '/hero.jpg',
+        width: 100,
+        height: 100,
+      })
     })
   })
 })
