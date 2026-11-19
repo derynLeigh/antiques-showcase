@@ -1,3 +1,5 @@
+import { notFound } from 'next/navigation'
+
 import { Container } from '@/components/Container'
 import { getPiece } from '@/lib/pieces'
 
@@ -8,7 +10,7 @@ export default async function PiecePage({
 }) {
   const { slug } = await params
   const piece = await getPiece(slug)
-  if (!piece) return null
+  if (!piece) notFound()
 
   return (
     <Container className="mt-16 lg:mt-32">
