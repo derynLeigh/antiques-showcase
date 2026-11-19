@@ -1,10 +1,13 @@
 import { notFound } from 'next/navigation'
 
 import { Container } from '@/components/Container'
-import { getPiece } from '@/lib/pieces'
+import { getAllPieces, getPiece } from '@/lib/pieces'
 
+// One page per piece, built ahead of time. Building them all reads every
+// piece, so a broken one fails the build rather than reaching the site.
 export async function generateStaticParams() {
-  return []
+  const pieces = await getAllPieces()
+  return pieces.map(({ slug }) => ({ slug }))
 }
 
 export default async function PiecePage({
