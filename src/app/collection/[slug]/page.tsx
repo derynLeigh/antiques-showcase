@@ -3,6 +3,10 @@ import { notFound } from 'next/navigation'
 import { Container } from '@/components/Container'
 import { getPiece } from '@/lib/pieces'
 
+export async function generateStaticParams() {
+  return []
+}
+
 export default async function PiecePage({
   params,
 }: {

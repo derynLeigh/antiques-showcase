@@ -1,17 +1,18 @@
 import { render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import PiecePage from '@/app/collection/[slug]/page'
+import PiecePage, { generateStaticParams } from '@/app/collection/[slug]/page'
 import type { Piece } from '@/lib/piece'
 
-const { getPiece, notFound } = vi.hoisted(() => ({
+const { getAllPieces, getPiece, notFound } = vi.hoisted(() => ({
+  getAllPieces: vi.fn(),
   getPiece: vi.fn(),
   // Next's notFound() throws to stop rendering and show the 404 page.
   notFound: vi.fn(() => {
     throw new Error('notFound')
   }),
 }))
-vi.mock('@/lib/pieces', () => ({ getPiece }))
+vi.mock('@/lib/pieces', () => ({ getAllPieces, getPiece }))
 vi.mock('next/navigation', () => ({ notFound }))
 
 const teaCaddy: Piece = {
@@ -71,5 +72,18 @@ describe('PiecePage', () => {
       expect(getPiece).toHaveBeenCalledWith('no-such-piece')
       expect(notFound).toHaveBeenCalled()
     })
+  })
+})
+
+// Next calls this at build time and builds one page per slug. Building every
+// piece is also what makes a broken piece fail the build.
+describe('generateStaticParams', () => {
+  it('returns the slug of every piece', async () => {
+    getAllPieces.mockResolvedValue([teaCaddy, { ...teaCaddy, slug: 'connie' }])
+
+    expect(await generateStaticParams()).toEqual([
+      { slug: 'georgian-tea-caddy' },
+      { slug: 'connie' },
+    ])
   })
 })
