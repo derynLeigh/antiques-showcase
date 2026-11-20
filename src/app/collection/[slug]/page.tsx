@@ -1,3 +1,4 @@
+import { type Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
 import { Container } from '@/components/Container'
@@ -10,6 +11,12 @@ export const dynamicParams = false
 export async function generateStaticParams() {
   const pieces = await getAllPieces()
   return pieces.map(({ slug }) => ({ slug }))
+}
+
+export async function generateMetadata(_props: {
+  params: Promise<{ slug: string }>
+}): Promise<Metadata> {
+  return {}
 }
 
 export default async function PiecePage({

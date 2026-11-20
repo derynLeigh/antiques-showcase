@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import PiecePage, {
   dynamicParams,
+  generateMetadata,
   generateStaticParams,
 } from '@/app/collection/[slug]/page'
 import type { Piece } from '@/lib/piece'
@@ -97,5 +98,29 @@ describe('generateStaticParams', () => {
 describe('dynamicParams', () => {
   it('is false, so only pieces built ahead of time have pages', () => {
     expect(dynamicParams).toBe(false)
+  })
+})
+
+// The root layout's title template adds the site name, so a tab reads
+// "Georgian silver tea caddy - Site Name". The summary is the description
+// search results and link previews show.
+describe('generateMetadata', () => {
+  it("uses the piece's title and summary", async () => {
+    getPiece.mockResolvedValue({
+      ...teaCaddy,
+      slug: 'connie',
+      title: "Lockheed Constellation 'Connie' shop display model",
+      summary: 'A 1950s shop display model with a 22 inch wingspan.',
+    })
+
+    const metadata = await generateMetadata({
+      params: Promise.resolve({ slug: 'connie' }),
+    })
+
+    expect(getPiece).toHaveBeenCalledWith('connie')
+    expect(metadata).toMatchObject({
+      title: "Lockheed Constellation 'Connie' shop display model",
+      description: 'A 1950s shop display model with a 22 inch wingspan.',
+    })
   })
 })
