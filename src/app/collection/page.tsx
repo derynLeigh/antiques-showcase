@@ -1,7 +1,16 @@
+import { type Metadata } from 'next'
+
 import { Card } from '@/components/Card'
 import { SimpleLayout } from '@/components/SimpleLayout'
 import type { Piece } from '@/lib/piece'
 import { getAllPieces } from '@/lib/pieces'
+
+// The root layout's title template adds the site name to the tab title. The
+// description is placeholder text, like the intro below.
+export const metadata: Metadata = {
+  title: 'The collection',
+  description: 'Every piece in the collection, with its story.',
+}
 
 function PieceCard({ piece }: { piece: Piece }) {
   return (
