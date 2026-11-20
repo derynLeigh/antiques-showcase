@@ -2,7 +2,7 @@
 # Builds the site with real piece folders, which the normal build can't do
 # until the collection has pieces. Checks that:
 #   1. valid pieces bundle, their photos process, and each gets a prebuilt page
-#      with its own title and link preview tags
+#      with its own title and link preview tags, linked from the collection page
 #   2. a piece with problems stops the build, listing what to fix
 #
 # The test fixtures are copied in under smoke- names and removed on exit, even
@@ -47,6 +47,15 @@ done
 grep -q '<title>Georgian silver tea caddy - Site Name</title>' \
   "$pages/smoke-georgian-tea-caddy.html" ||
   fail "smoke-georgian-tea-caddy does not have its own title"
+
+collection=.next/server/app/collection.html
+[ -f "$collection" ] || fail "no prebuilt collection page"
+grep -q '<title>The collection - Site Name</title>' "$collection" ||
+  fail "the collection page has no page title"
+for slug in smoke-connie smoke-georgian-tea-caddy; do
+  grep -q "href=\"/collection/$slug\"" "$collection" ||
+    fail "the collection page has no link to $slug"
+done
 
 echo "== Smoke build 2 of 2: a piece left as the unfilled template"
 cp -R "$pieces/_template" "$pieces/smoke-unfilled"
