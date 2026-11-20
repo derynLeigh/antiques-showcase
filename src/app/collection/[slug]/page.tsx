@@ -24,7 +24,14 @@ export async function generateMetadata({
   const piece = await getPiece(slug)
   if (!piece) notFound()
 
-  return { title: piece.title, description: piece.summary }
+  const { title, summary: description } = piece
+  return {
+    title,
+    description,
+    // Link previews in chat apps and social sites. The photo comes with BOB-24.
+    openGraph: { type: 'article', title, description },
+    twitter: { card: 'summary', title, description },
+  }
 }
 
 export default async function PiecePage({
