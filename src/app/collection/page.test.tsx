@@ -1,7 +1,7 @@
 import { render, screen, within } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 
-import CollectionPage from '@/app/collection/page'
+import CollectionPage, { metadata } from '@/app/collection/page'
 import type { Piece } from '@/lib/piece'
 
 const { getAllPieces } = vi.hoisted(() => ({ getAllPieces: vi.fn() }))
@@ -92,6 +92,17 @@ describe('CollectionPage', () => {
         screen.getByText('No pieces have been added yet.'),
       ).toBeInTheDocument()
       expect(screen.queryAllByRole('article')).toHaveLength(0)
+    })
+  })
+})
+
+// The root layout's title template adds the site name, so the tab reads
+// "The collection - Site Name".
+describe('metadata', () => {
+  it('gives the page its title and a description', () => {
+    expect(metadata).toMatchObject({
+      title: 'The collection',
+      description: 'Every piece in the collection, with its story.',
     })
   })
 })
