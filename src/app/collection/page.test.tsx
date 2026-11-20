@@ -60,4 +60,25 @@ describe('CollectionPage', () => {
       }),
     ).toHaveAttribute('href', '/collection/connie')
   })
+
+  // made is shown as written, as on the piece page.
+  it("shows each piece's summary and when it was made", async () => {
+    getAllPieces.mockResolvedValue([teaCaddy, connie])
+
+    render(await CollectionPage())
+
+    const [teaCaddyCard, connieCard] = screen.getAllByRole('article')
+    expect(
+      within(teaCaddyCard).getByText(
+        'An oval silver tea caddy with a domed lid.',
+      ),
+    ).toBeInTheDocument()
+    expect(within(teaCaddyCard).getByText('c. 1780')).toBeInTheDocument()
+    expect(
+      within(connieCard).getByText(
+        'A 1950s shop display model with a 22 inch wingspan.',
+      ),
+    ).toBeInTheDocument()
+    expect(within(connieCard).getByText('1950s')).toBeInTheDocument()
+  })
 })
