@@ -81,4 +81,17 @@ describe('CollectionPage', () => {
     ).toBeInTheDocument()
     expect(within(connieCard).getByText('1950s')).toBeInTheDocument()
   })
+
+  describe('when the collection has no pieces', () => {
+    it('says no pieces have been added yet', async () => {
+      getAllPieces.mockResolvedValue([])
+
+      render(await CollectionPage())
+
+      expect(
+        screen.getByText('No pieces have been added yet.'),
+      ).toBeInTheDocument()
+      expect(screen.queryAllByRole('article')).toHaveLength(0)
+    })
+  })
 })
