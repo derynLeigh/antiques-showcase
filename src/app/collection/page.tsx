@@ -7,9 +7,15 @@ import { getAllPieces } from '@/lib/pieces'
 
 // The root layout's title template adds the site name to the tab title. The
 // description is placeholder text, like the intro below.
+const title = 'The collection'
+const description = 'Every piece in the collection, with its story.'
+
 export const metadata: Metadata = {
-  title: 'The collection',
-  description: 'Every piece in the collection, with its story.',
+  title,
+  description,
+  // Link previews in chat apps and social sites.
+  openGraph: { type: 'website', title, description },
+  twitter: { card: 'summary', title, description },
 }
 
 function PieceCard({ piece }: { piece: Piece }) {
