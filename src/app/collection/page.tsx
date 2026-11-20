@@ -9,6 +9,11 @@ export default async function CollectionPage() {
   return (
     // The intro is placeholder text, to be replaced with the curator's words.
     <SimpleLayout title="The collection" intro="Every piece, with its story.">
+      {pieces.length === 0 && (
+        <p className="text-base text-zinc-600 dark:text-zinc-400">
+          No pieces have been added yet.
+        </p>
+      )}
       <div className="flex max-w-3xl flex-col space-y-16">
         {pieces.map((piece) => (
           <Card as="article" key={piece.slug}>
