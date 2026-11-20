@@ -15,6 +15,9 @@ export default async function CollectionPage() {
             <Card.Title href={`/collection/${piece.slug}`}>
               {piece.title}
             </Card.Title>
+            {/* Shown as written: "c. 1780", "1950s", "Late Georgian". */}
+            <Card.Eyebrow decorate>{piece.made}</Card.Eyebrow>
+            <Card.Description>{piece.summary}</Card.Description>
           </Card>
         ))}
       </div>
