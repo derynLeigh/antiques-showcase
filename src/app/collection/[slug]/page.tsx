@@ -44,7 +44,7 @@ export default async function PiecePage({
             {piece.title}
           </h1>
           {/* Shown as written: "c. 1780", "1950s", "Late Georgian". */}
-          <p className="order-first text-base text-zinc-400 dark:text-zinc-500">
+          <p className="order-first text-base text-zinc-600 dark:text-zinc-400">
             {piece.made}
           </p>
         </header>
