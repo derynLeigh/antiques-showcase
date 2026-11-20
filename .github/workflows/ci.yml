@@ -40,3 +40,8 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      # The build above uses the real content, which may have no pieces yet.
+      # This builds fixture pieces too, and checks a broken piece fails.
+      - name: Smoke build with fixture pieces
+        run: npm run test:build

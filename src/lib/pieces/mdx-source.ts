@@ -31,7 +31,9 @@ export function createMdxPieceSource({
   order,
 }: MdxPieceSourceOptions): PieceSource {
   async function list(): Promise<RawPiece[]> {
-    const files = await glob('*/index.mdx', { cwd: folder })
+    // Folders starting with _ (such as _template) are starting points to copy,
+    // not pieces.
+    const files = await glob('*/index.mdx', { cwd: folder, ignore: ['_*/**'] })
     const slugs = files.map((file) => path.dirname(file))
 
     return Promise.all(

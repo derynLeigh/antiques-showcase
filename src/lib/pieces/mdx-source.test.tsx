@@ -24,6 +24,14 @@ describe('createMdxPieceSource', () => {
       ])
     })
 
+    // A folder such as _template holds a starting point to copy. It is
+    // bundled with the pieces but is not one.
+    it('skips folders whose names start with _', async () => {
+      const raws = await source.list()
+
+      expect(raws.map((raw) => raw.slug)).not.toContain('_template')
+    })
+
     // meta is checked later, by the repository, so here it only has to be the
     // file's piece export, passed through unchanged.
     it("returns each piece's metadata and its story as a component", async () => {

@@ -21,10 +21,30 @@ function inCuratorOrder(pieces: Piece[], order: string[]): Piece[] {
   return [...listed, ...unplaced]
 }
 
-export function createPieceRepository(source: PieceSource) {
-  async function getAllPieces(): Promise<Piece[]> {
+interface PieceRepositoryOptions {
+  // Keep the first checked result and return it for every later lookup. For
+  // builds, where each page would otherwise check the whole collection again.
+  // Leave it off in next dev, so an edited piece shows on the next page load.
+  reuse?: boolean
+}
+
+export function createPieceRepository(
+  source: PieceSource,
+  { reuse = false }: PieceRepositoryOptions = {},
+) {
+  async function readAndCheck(): Promise<Piece[]> {
     const [raws, order] = await Promise.all([source.list(), source.order()])
     return inCuratorOrder(validate(raws, order), order)
+  }
+
+  // The promise itself is kept, so lookups made at the same time share one
+  // read, and a collection with problems keeps failing with the same error.
+  let kept: Promise<Piece[]> | undefined
+
+  function getAllPieces(): Promise<Piece[]> {
+    if (!reuse) return readAndCheck()
+    kept ??= readAndCheck()
+    return kept
   }
 
   // Goes through getAllPieces so every lookup gets the same checks.
