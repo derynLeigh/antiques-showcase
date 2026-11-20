@@ -15,8 +15,15 @@ export default async function CollectionPage() {
             <Card.Title href={`/collection/${piece.slug}`}>
               {piece.title}
             </Card.Title>
-            {/* Shown as written: "c. 1780", "1950s", "Late Georgian". */}
-            <Card.Eyebrow decorate>{piece.made}</Card.Eyebrow>
+            {/* Shown as written: "c. 1780", "1950s", "Late Georgian".
+                Card.Eyebrow's own grey is too faint to read. It keeps its
+                class alongside ours, so ! makes this colour win. */}
+            <Card.Eyebrow
+              decorate
+              className="text-zinc-600! dark:text-zinc-400!"
+            >
+              {piece.made}
+            </Card.Eyebrow>
             <Card.Description>{piece.summary}</Card.Description>
           </Card>
         ))}
