@@ -13,10 +13,18 @@ export async function generateStaticParams() {
   return pieces.map(({ slug }) => ({ slug }))
 }
 
-export async function generateMetadata(_props: {
+// The tab title (with the site name added by the root layout) and the
+// description shown in search results and link previews.
+export async function generateMetadata({
+  params,
+}: {
   params: Promise<{ slug: string }>
 }): Promise<Metadata> {
-  return {}
+  const { slug } = await params
+  const piece = await getPiece(slug)
+  if (!piece) notFound()
+
+  return { title: piece.title, description: piece.summary }
 }
 
 export default async function PiecePage({
