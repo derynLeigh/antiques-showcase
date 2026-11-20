@@ -105,4 +105,21 @@ describe('metadata', () => {
       description: 'Every piece in the collection, with its story.',
     })
   })
+
+  // Next doesn't copy title and description into Open Graph or Twitter, and
+  // without a card type X shows a bare link.
+  it('gives link previews the same title and description', () => {
+    expect(metadata).toMatchObject({
+      openGraph: {
+        type: 'website',
+        title: 'The collection',
+        description: 'Every piece in the collection, with its story.',
+      },
+      twitter: {
+        card: 'summary',
+        title: 'The collection',
+        description: 'Every piece in the collection, with its story.',
+      },
+    })
+  })
 })
