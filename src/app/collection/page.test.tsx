@@ -34,6 +34,16 @@ const connie: Piece = {
 }
 
 describe('CollectionPage', () => {
+  it('has the level-1 heading The collection', async () => {
+    getAllPieces.mockResolvedValue([teaCaddy, connie])
+
+    render(await CollectionPage())
+
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'The collection' }),
+    ).toBeInTheDocument()
+  })
+
   it('shows one card per piece, each linking to its page', async () => {
     getAllPieces.mockResolvedValue([teaCaddy, connie])
 
