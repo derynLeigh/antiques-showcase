@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import type { PieceMeta } from '@/lib/piece'
 import { inMemoryPieceSource } from '@/lib/pieces/in-memory-source'
@@ -445,6 +445,49 @@ describe('createPieceRepository', () => {
       const pieces = await getFeatured()
 
       expect(slugs(pieces)).toEqual(['connie', 'tea-caddy'])
+    })
+  })
+
+  // Each piece page looks up one piece, and each lookup reads and checks the
+  // whole collection, so a build did that once per page. Reuse keeps the first
+  // result instead. It's for builds only: in next dev an edited piece must
+  // show up on the next page load.
+  describe('reuse', () => {
+    // The in-memory source, with list() counting how often it's read.
+    function countingSource() {
+      const source = inMemoryPieceSource([
+        rawPiece('tea-caddy'),
+        rawPiece('connie'),
+      ])
+      return { ...source, list: vi.fn(source.list) }
+    }
+
+    async function lookUpEverything(
+      repository: ReturnType<typeof createPieceRepository>,
+    ) {
+      await repository.getAllPieces()
+      await repository.getPiece('tea-caddy')
+      await repository.getPiece('connie')
+      await repository.getRecentlyAdded(4)
+      await repository.getFeatured()
+    }
+
+    it('reads and checks the source once when reuse is on', async () => {
+      const source = countingSource()
+      const repository = createPieceRepository(source, { reuse: true })
+
+      await lookUpEverything(repository)
+
+      expect(source.list).toHaveBeenCalledTimes(1)
+    })
+
+    it('reads the source for every lookup when reuse is off', async () => {
+      const source = countingSource()
+      const repository = createPieceRepository(source)
+
+      await lookUpEverything(repository)
+
+      expect(source.list).toHaveBeenCalledTimes(5)
     })
   })
 })

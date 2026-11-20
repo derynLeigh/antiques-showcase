@@ -21,7 +21,14 @@ function inCuratorOrder(pieces: Piece[], order: string[]): Piece[] {
   return [...listed, ...unplaced]
 }
 
-export function createPieceRepository(source: PieceSource) {
+interface PieceRepositoryOptions {
+  reuse?: boolean
+}
+
+export function createPieceRepository(
+  source: PieceSource,
+  _options: PieceRepositoryOptions = {},
+) {
   async function getAllPieces(): Promise<Piece[]> {
     const [raws, order] = await Promise.all([source.list(), source.order()])
     return inCuratorOrder(validate(raws, order), order)
