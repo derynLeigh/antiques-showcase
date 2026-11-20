@@ -123,4 +123,28 @@ describe('generateMetadata', () => {
       description: 'A 1950s shop display model with a 22 inch wingspan.',
     })
   })
+
+  // Next doesn't copy title and description into Open Graph or Twitter, and
+  // without a card type X shows a bare link. The preview photo comes with
+  // BOB-24.
+  it("gives link previews the piece's title and summary", async () => {
+    getPiece.mockResolvedValue(teaCaddy)
+
+    const metadata = await generateMetadata({
+      params: Promise.resolve({ slug: 'georgian-tea-caddy' }),
+    })
+
+    expect(metadata).toMatchObject({
+      openGraph: {
+        type: 'article',
+        title: 'Georgian silver tea caddy',
+        description: 'An oval silver tea caddy with a domed lid.',
+      },
+      twitter: {
+        card: 'summary',
+        title: 'Georgian silver tea caddy',
+        description: 'An oval silver tea caddy with a domed lid.',
+      },
+    })
+  })
 })
