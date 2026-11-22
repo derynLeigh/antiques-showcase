@@ -3,7 +3,7 @@
 Draft for discussion. Each component or module from the Spotlight scaffold is listed with what it actually does, then sorted into three kinds of test:
 
 - **Characterise:** template behaviour we're keeping. Write a test that pins down what it does today, so later refactors can't break it silently.
-- **Drive:** behaviour that changes for the showcase. Write the failing test for the *new* behaviour first, then change the code (red, green, refactor).
+- **Drive:** behaviour that changes for the showcase. Write the failing test for the _new_ behaviour first, then change the code (red, green, refactor).
 - **Skip:** styling, layout or pure markup where a test would only restate the class names.
 
 Test levels:
@@ -31,13 +31,13 @@ Conventions (`src/components/Button.test.tsx` is the reference example):
 
 What it does: renders a `<button>` when there's no `href`, and a Next `<Link>` when there is one. Two visual variants: `primary` (default) and `secondary`. Passes all other props through.
 
-| Behaviour | Kind | Level |
-| --- | --- | --- |
-| Without `href`, renders a button you can find by role `button` | Characterise | Component |
-| With `href`, renders a link with that `href` (role `link`) | Characterise | Component |
+| Behaviour                                                           | Kind         | Level     |
+| ------------------------------------------------------------------- | ------------ | --------- |
+| Without `href`, renders a button you can find by role `button`      | Characterise | Component |
+| With `href`, renders a link with that `href` (role `link`)          | Characterise | Component |
 | Passes through props such as `type="submit"`, `disabled`, `onClick` | Characterise | Component |
-| Clicking a button calls `onClick` | Characterise | Component |
-| Variant class names | Skip | |
+| Clicking a button calls `onClick`                                   | Characterise | Component |
+| Variant class names                                                 | Skip         |           |
 
 Notes: this becomes the "Make an offer or ask a question" trigger, so the button/link split matters.
 
@@ -45,16 +45,16 @@ Notes: this becomes the "Make an offer or ask a question" trigger, so the button
 
 What it does: a compound component. `Card` renders as any element via `as`. `Card.Title` renders a heading (default `h2`) and wraps its text in `Card.Link` when given `href`. `Card.Link` makes the whole card clickable with an overlay span. `Card.Eyebrow` renders a small label (default `p`, often `time`) with an optional decorative bar. `Card.Cta` is a visual "Read article" prompt that is `aria-hidden`. `Card.Description` is a paragraph.
 
-| Behaviour | Kind | Level |
-| --- | --- | --- |
-| `Card` renders as the element passed in `as` (for example `article`, `li`) | Characterise | Component |
-| `Card.Title` with `href` renders a heading containing a link to that `href` | Characterise | Component |
-| `Card.Title` without `href` renders plain heading text, no link | Characterise | Component |
-| The card's accessible link name is the title text only | Characterise | Component |
-| `Card.Cta` is hidden from assistive technology | Characterise | Component |
-| `Card.Eyebrow` with `as="time"` keeps its `dateTime` attribute | Characterise | Component |
-| `Card.Eyebrow` with `decorate` adds a decorative bar | Skip: purely visual with no text, so a test could only query the markup | |
-| Hover and overlay styling | Skip | |
+| Behaviour                                                                   | Kind                                                                    | Level     |
+| --------------------------------------------------------------------------- | ----------------------------------------------------------------------- | --------- |
+| `Card` renders as the element passed in `as` (for example `article`, `li`)  | Characterise                                                            | Component |
+| `Card.Title` with `href` renders a heading containing a link to that `href` | Characterise                                                            | Component |
+| `Card.Title` without `href` renders plain heading text, no link             | Characterise                                                            | Component |
+| The card's accessible link name is the title text only                      | Characterise                                                            | Component |
+| `Card.Cta` is hidden from assistive technology                              | Characterise                                                            | Component |
+| `Card.Eyebrow` with `as="time"` keeps its `dateTime` attribute              | Characterise                                                            | Component |
+| `Card.Eyebrow` with `decorate` adds a decorative bar                        | Skip: purely visual with no text, so a test could only query the markup |           |
+| Hover and overlay styling                                                   | Skip                                                                    |           |
 
 Notes: these are the building blocks of the collection gallery, so they're worth pinning down early.
 
@@ -62,22 +62,22 @@ Notes: these are the building blocks of the collection gallery, so they're worth
 
 What it does: nested width-limiting `div`s. Forwards refs and extra props.
 
-| Behaviour | Kind | Level |
-| --- | --- | --- |
-| Renders children (harness test already does this) | Characterise | Component |
-| Forwards a ref to the outer element | Characterise | Component (optional) |
-| Width and padding classes | Skip | |
+| Behaviour                                         | Kind         | Level                |
+| ------------------------------------------------- | ------------ | -------------------- |
+| Renders children (harness test already does this) | Characterise | Component            |
+| Forwards a ref to the outer element               | Characterise | Component (optional) |
+| Width and padding classes                         | Skip         |                      |
 
 ### `SimpleLayout`
 
 What it does: page header with an `h1` title and intro paragraph; renders a children wrapper only when there are children.
 
-| Behaviour | Kind | Level |
-| --- | --- | --- |
-| Shows the title as the page's level-1 heading | Characterise | Component |
-| Shows the intro text | Characterise | Component |
-| Renders children after the title and intro | Characterise | Component |
-| Renders no spacing wrapper when there are no children | Skip: the wrapper only adds margin, so a test could only query the markup | |
+| Behaviour                                             | Kind                                                                      | Level     |
+| ----------------------------------------------------- | ------------------------------------------------------------------------- | --------- |
+| Shows the title as the page's level-1 heading         | Characterise                                                              | Component |
+| Shows the intro text                                  | Characterise                                                              | Component |
+| Renders children after the title and intro            | Characterise                                                              | Component |
+| Renders no spacing wrapper when there are no children | Skip: the wrapper only adds margin, so a test could only query the markup |           |
 
 ### `Section`
 
@@ -101,48 +101,48 @@ The most complex component. Several behaviours bundled together:
 
 #### Navigation
 
-| Behaviour | Kind | Level |
-| --- | --- | --- |
-| Desktop nav lists the site's pages as links | Drive (links will change: Collection, About) | Component |
-| The link for the current page is marked active | Drive: add `aria-current="page"`. Today "active" is only a colour class, which screen readers can't see and tests can only check via class names | Component |
-| Mobile "Menu" button opens a panel containing the same links | Characterise | Component |
-| "Close menu" closes the panel | Characterise | Component |
-| Pressing Escape closes the panel | Characterise | Component |
-| Choosing a link in the mobile panel closes it | Characterise | Component / e2e |
+| Behaviour                                                    | Kind                                                                                                                                             | Level           |
+| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ | --------------- |
+| Desktop nav lists the site's pages as links                  | Drive (links will change: Collection, About)                                                                                                     | Component       |
+| The link for the current page is marked active               | Drive: add `aria-current="page"`. Today "active" is only a colour class, which screen readers can't see and tests can only check via class names | Component       |
+| Mobile "Menu" button opens a panel containing the same links | Characterise                                                                                                                                     | Component       |
+| "Close menu" closes the panel                                | Characterise                                                                                                                                     | Component       |
+| Pressing Escape closes the panel                             | Characterise                                                                                                                                     | Component       |
+| Choosing a link in the mobile panel closes it                | Characterise                                                                                                                                     | Component / e2e |
 
 #### Theme toggle
 
-| Behaviour | Kind | Level |
-| --- | --- | --- |
-| Before mount, label is "Toggle theme" (avoids a hydration mismatch) | Characterise | Component |
-| After mount, label says which theme it will switch to ("Switch to dark theme") | Characterise | Component |
-| Clicking it calls `setTheme` with the other theme | Characterise | Component, with `next-themes` mocked |
-| The theme persists across reloads | Characterise | End-to-end |
+| Behaviour                                                                      | Kind         | Level                                |
+| ------------------------------------------------------------------------------ | ------------ | ------------------------------------ |
+| Before mount, label is "Toggle theme" (avoids a hydration mismatch)            | Characterise | Component                            |
+| After mount, label says which theme it will switch to ("Switch to dark theme") | Characterise | Component                            |
+| Clicking it calls `setTheme` with the other theme                              | Characterise | Component, with `next-themes` mocked |
+| The theme persists across reloads                                              | Characterise | End-to-end                           |
 
 #### Avatar
 
-| Behaviour | Kind | Level |
-| --- | --- | --- |
-| Every page has exactly one link home, with accessible name "Home" | Characterise | Component |
-| On the home page the avatar is large; elsewhere it is small | Skip: only the size differs, so a test could only check class names | |
+| Behaviour                                                         | Kind                                                                | Level     |
+| ----------------------------------------------------------------- | ------------------------------------------------------------------- | --------- |
+| Every page has exactly one link home, with accessible name "Home" | Characterise                                                        | Component |
+| On the home page the avatar is large; elsewhere it is small       | Skip: only the size differs, so a test could only check class names |           |
 
 #### Scroll-driven header and avatar animation
 
 The `useEffect` calculates header height, margins and avatar scale from `window.scrollY` and writes CSS custom properties to `<html>`.
 
-| Behaviour | Kind | Level |
-| --- | --- | --- |
-| Avatar scales from 1 to 36/64 and shifts right as you scroll past the delay | Characterise after refactor | Unit |
-| Header becomes fixed once you've scrolled past the avatar | Characterise after refactor | Unit |
-| It looks right while scrolling | Skip, or a single visual check | End-to-end |
+| Behaviour                                                                   | Kind                           | Level      |
+| --------------------------------------------------------------------------- | ------------------------------ | ---------- |
+| Avatar scales from 1 to 36/64 and shifts right as you scroll past the delay | Characterise after refactor    | Unit       |
+| Header becomes fixed once you've scrolled past the avatar                   | Characterise after refactor    | Unit       |
+| It looks right while scrolling                                              | Skip, or a single visual check | End-to-end |
 
 **Architecture note:** the maths is pure, but it's trapped inside an effect that reads the DOM and writes CSS variables, so it can only be tested through jsdom, which has no layout. Extract it into pure functions, for example `avatarTransform(scrollY, downDelay)` and `headerStyles({ scrollY, top, height, downDelay, isInitial })`, that return values. Then the effect just reads the DOM, calls them and writes the results. This is the "functional core, imperative shell" pattern: unit tests cover the core, and the thin shell needs at most one end-to-end check. `clamp` comes out with them and gets its own unit tests.
 
 ### `Footer`
 
-| Behaviour | Kind | Level |
-| --- | --- | --- |
-| Lists the same pages as the header | Drive (links will change) | Component |
+| Behaviour                            | Kind                                                            | Level     |
+| ------------------------------------ | --------------------------------------------------------------- | --------- |
+| Lists the same pages as the header   | Drive (links will change)                                       | Component |
 | Shows "© {current year} {site name}" | Characterise, with the system time fixed via `vi.setSystemTime` | Component |
 
 Notes: header and footer both hard-code the nav list. A shared `navigation` array would make "header and footer match" true by construction rather than by test.
@@ -153,20 +153,20 @@ Composes the header, main content and footer. **Skip** at component level; one e
 
 ### `Providers` (`src/app/providers.tsx`)
 
-| Behaviour | Kind | Level |
-| --- | --- | --- |
-| Exposes the previous pathname through `AppContext` after navigation | Characterise | Component, with `usePathname` mocked and the provider rerendered with a new path |
-| On first render there is no previous pathname | Characterise | Component |
-| `ThemeWatcher` switches to "system" when the chosen theme matches the OS setting | Characterise | Component, with `matchMedia` mocked (jsdom doesn't provide it) |
+| Behaviour                                                                        | Kind         | Level                                                                            |
+| -------------------------------------------------------------------------------- | ------------ | -------------------------------------------------------------------------------- |
+| Exposes the previous pathname through `AppContext` after navigation              | Characterise | Component, with `usePathname` mocked and the provider rerendered with a new path |
+| On first render there is no previous pathname                                    | Characterise | Component                                                                        |
+| `ThemeWatcher` switches to "system" when the chosen theme matches the OS setting | Characterise | Component, with `matchMedia` mocked (jsdom doesn't provide it)                   |
 
 ### `ArticleLayout` (becomes the piece page layout)
 
-| Behaviour | Kind | Level |
-| --- | --- | --- |
-| Shows the title as the `h1` and the formatted date in a `time` element | Characterise | Component |
-| Renders the MDX body inside the prose wrapper | Characterise | Component |
+| Behaviour                                                                                 | Kind         | Level                                               |
+| ----------------------------------------------------------------------------------------- | ------------ | --------------------------------------------------- |
+| Shows the title as the `h1` and the formatted date in a `time` element                    | Characterise | Component                                           |
+| Renders the MDX body inside the prose wrapper                                             | Characterise | Component                                           |
 | Shows a "Go back" button only when there is a previous page, and it calls `router.back()` | Characterise | Component, with `AppContext` and `useRouter` mocked |
-| Photo gallery, key facts and offer button | **Drive** | Component |
+| Photo gallery, key facts and offer button                                                 | **Drive**    | Component                                           |
 
 This is where most of the showcase's new behaviour will be test-driven.
 
@@ -176,16 +176,16 @@ This is where most of the showcase's new behaviour will be test-driven.
 
 Next 16 pages are async server components. React Testing Library can render one by awaiting it first: `render(await Home())`.
 
-| Page | Behaviour | Kind | Level |
-| --- | --- | --- | --- |
-| Home | Lists the most recent articles (at most four), newest first | Characterise now, then drive into "recently added pieces" | Component, with `getAllArticles` mocked |
-| Home | Photo strip shows five photos | Drive (becomes featured pieces) | Component |
-| Home | Placeholder list (old "Work" panel): each entry shows organisation, role and a date range with an accessible label "2000 until Present" | Characterise if kept for "Our past lives" | Component |
-| Articles index | Lists every article with a link to `/articles/{slug}` | Drive (becomes the collection gallery) | Component |
-| About | Headline, paragraphs, social links and email link | Drive once real content and SoundCloud links exist | Component |
-| Projects | One card per project with a link | Later ("Our music") | |
-| Thank you | Shows the confirmation title | Drive (becomes the offer confirmation) | Component |
-| Not found | Shows "Page not found" and a link home | Characterise | Component |
+| Page           | Behaviour                                                                                                                               | Kind                                                      | Level                                   |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- | --------------------------------------- |
+| Home           | Lists the most recent articles (at most four), newest first                                                                             | Characterise now, then drive into "recently added pieces" | Component, with `getAllArticles` mocked |
+| Home           | Photo strip shows five photos                                                                                                           | Drive (becomes featured pieces)                           | Component                               |
+| Home           | Placeholder list (old "Work" panel): each entry shows organisation, role and a date range with an accessible label "2000 until Present" | Characterise if kept for "Our past lives"                 | Component                               |
+| Articles index | Lists every article with a link to `/articles/{slug}`                                                                                   | Drive (becomes the collection gallery)                    | Component                               |
+| About          | Headline, paragraphs, social links and email link                                                                                       | Drive once real content and SoundCloud links exist        | Component                               |
+| Projects       | One card per project with a link                                                                                                        | Later ("Our music")                                       |                                         |
+| Thank you      | Shows the confirmation title                                                                                                            | Drive (becomes the offer confirmation)                    | Component                               |
+| Not found      | Shows "Page not found" and a link home                                                                                                  | Characterise                                              | Component                               |
 
 ---
 
@@ -195,10 +195,10 @@ Next 16 pages are async server components. React Testing Library can render one 
 
 What it does: globs `src/app/articles/*/page.mdx` from the file system, dynamically imports each one to read its exported `article` metadata, adds a slug from the folder name, and sorts newest first.
 
-| Behaviour | Kind | Level |
-| --- | --- | --- |
-| Slug comes from the folder name | Characterise | Unit |
-| Sorted newest first | Characterise, then drive "sorted by date made" | Unit |
+| Behaviour                       | Kind                                           | Level |
+| ------------------------------- | ---------------------------------------------- | ----- |
+| Slug comes from the folder name | Characterise                                   | Unit  |
+| Sorted newest first             | Characterise, then drive "sorted by date made" | Unit  |
 
 **Architecture note:** it's hard to unit test as written, because the file system lookup and the MDX import are hard-wired. This is where the repository layer goes: `getAllPieces()` and `getPiece(slug)` sit in front of a small source interface. Tests give the repository an in-memory source, and production gives it the MDX source. This is the same seam that lets you swap in a CMS later.
 
@@ -210,11 +210,11 @@ Covered by the harness test: long US-style date, no time-zone shift. **Drive:** 
 
 What it does today: lists the MDX folders, then **fetches each rendered article page over HTTP from itself** and scrapes the title, date and body out of the HTML with cheerio to build an RSS feed. It throws if `NEXT_PUBLIC_SITE_URL` is missing.
 
-| Behaviour | Kind | Level |
-| --- | --- | --- |
-| Throws a clear error when `NEXT_PUBLIC_SITE_URL` is missing | Characterise | Unit |
-| Produces valid RSS with one item per piece | Drive | Unit, once it builds from the repository |
-| Responds with `content-type: application/xml` | Characterise | Unit or end-to-end |
+| Behaviour                                                   | Kind         | Level                                    |
+| ----------------------------------------------------------- | ------------ | ---------------------------------------- |
+| Throws a clear error when `NEXT_PUBLIC_SITE_URL` is missing | Characterise | Unit                                     |
+| Produces valid RSS with one item per piece                  | Drive        | Unit, once it builds from the repository |
+| Responds with `content-type: application/xml`               | Characterise | Unit or end-to-end                       |
 
 **Architecture note:** scraping your own HTML couples the feed to page markup. Changing a heading level breaks the feed. Once `lib/pieces.ts` exists, build the feed from piece data and test it as a pure function.
 

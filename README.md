@@ -16,13 +16,13 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Scripts
 
-| Command | What it does |
-|---|---|
-| `npm run dev` | Development server |
-| `npm run build` | Production build, including the TypeScript check |
-| `npm run lint` | ESLint |
-| `npm test` | Run the test suite once (Vitest) |
-| `npm run test:watch` | Run tests in watch mode while you work |
+| Command              | What it does                                     |
+| -------------------- | ------------------------------------------------ |
+| `npm run dev`        | Development server                               |
+| `npm run build`      | Production build, including the TypeScript check |
+| `npm run lint`       | ESLint                                           |
+| `npm test`           | Run the test suite once (Vitest)                 |
+| `npm run test:watch` | Run tests in watch mode while you work           |
 
 ## Testing
 
