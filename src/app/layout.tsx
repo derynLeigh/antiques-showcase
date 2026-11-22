@@ -11,11 +11,6 @@ export const metadata: Metadata = {
     default: 'Site Name - Placeholder tagline',
   },
   description: 'Placeholder site description.',
-  alternates: {
-    types: {
-      'application/rss+xml': `${process.env.NEXT_PUBLIC_SITE_URL}/feed.xml`,
-    },
-  },
 }
 
 export default function RootLayout({
