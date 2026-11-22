@@ -35,7 +35,7 @@ Open [http://localhost:3000](http://localhost:3000).
 
 - Removed: Speaking and Uses pages, the newsletter form, the three sample articles and their images, and the template's company logos.
 - Replaced with placeholders: all copy, the photos, avatar and portrait (generated grey placeholders), the work list, projects, and the site name in the layout, footer and RSS feed.
-- Kept as-is for now: the `articles` route and `lib/articles.ts`. They become the collection and `lib/pieces.ts`, driven by tests.
+- Replaced: the `articles` route and `lib/articles.ts` became the collection (`/collection`) and `lib/pieces`, driven by tests.
 
 ## Licence
 
