@@ -6,7 +6,7 @@ import { Footer } from '@/components/Footer'
 // Footer repeats the site's pages and shows the copyright line. It lists the
 // same pages as the header, so Projects is gone from both.
 describe('Footer', () => {
-  it('lists About and Articles as links', () => {
+  it('lists About and Collection as links', () => {
     render(<Footer />)
 
     const links = within(screen.getByRole('contentinfo')).getAllByRole('link')
@@ -15,7 +15,7 @@ describe('Footer', () => {
       links.map((link) => [link.textContent, link.getAttribute('href')]),
     ).toEqual([
       ['About', '/about'],
-      ['Articles', '/articles'],
+      ['Collection', '/collection'],
     ])
   })
 
