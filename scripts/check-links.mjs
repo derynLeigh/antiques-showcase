@@ -48,11 +48,22 @@ function decodeEntities(value) {
     .replace(/&amp;/g, '&')
 }
 
+// Reads each <a> tag's attributes one by one, keeping quoted values whole, so
+// text such as title="see href=/about" is never mistaken for the link, and a >
+// inside a quoted value doesn't end the tag. When a tag has href twice, the
+// first one counts, as in a browser.
 function hrefsIn(html) {
-  const anchors = html.match(/<a\s[^>]*>/gi) ?? []
+  const anchors = html.match(/<a\s(?:[^>"']|"[^"]*"|'[^']*')*>/gi) ?? []
   return anchors.flatMap((anchor) => {
-    const href = anchor.match(/\shref\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/i)
-    return href ? [decodeEntities(href[1] ?? href[2] ?? href[3])] : []
+    const attributes = [
+      ...anchor
+        .slice(2, -1)
+        .matchAll(/([^\s=/>]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+)))?/g),
+    ]
+    const href = attributes.find(
+      (attribute) => attribute[1].toLowerCase() === 'href',
+    )
+    return href ? [decodeEntities(href[2] ?? href[3] ?? href[4] ?? '')] : []
   })
 }
 
