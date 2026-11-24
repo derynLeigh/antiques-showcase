@@ -31,6 +31,16 @@ const connie: Piece = {
   title: "Lockheed Constellation 'Connie' shop display model",
   summary: 'A 1950s shop display model with a 22 inch wingspan.',
   made: '1950s',
+  images: [
+    {
+      src: { src: '/connie-side.jpg', width: 100, height: 100 },
+      alt: 'Silver four-engined airliner model on a stand, from the side',
+    },
+    {
+      src: { src: '/connie-tail.jpg', width: 100, height: 100 },
+      alt: "Close-up of the model airliner's triple tail fins",
+    },
+  ],
 }
 
 describe('CollectionPage', () => {
@@ -80,6 +90,26 @@ describe('CollectionPage', () => {
       ),
     ).toBeInTheDocument()
     expect(within(connieCard).getByText('1950s')).toBeInTheDocument()
+  })
+
+  // The first photo is the main one. The rest are for the piece page.
+  it("shows each piece's main photo, described by its alt text", async () => {
+    getAllPieces.mockResolvedValue([teaCaddy, connie])
+
+    render(await CollectionPage())
+
+    const [teaCaddyCard, connieCard] = screen.getAllByRole('article')
+    expect(
+      within(teaCaddyCard).getByRole('img', {
+        name: 'Oval silver tea caddy with a domed lid, on a linen backdrop',
+      }),
+    ).toBeInTheDocument()
+    expect(
+      within(connieCard).getByRole('img', {
+        name: 'Silver four-engined airliner model on a stand, from the side',
+      }),
+    ).toBeInTheDocument()
+    expect(within(connieCard).getAllByRole('img')).toHaveLength(1)
   })
 
   describe('when the collection has no pieces', () => {
