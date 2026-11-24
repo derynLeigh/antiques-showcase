@@ -5,11 +5,15 @@
 //
 // Each link is resolved the way a browser would, against the address of the
 // page it's on, so "articles", "./articles" and "../articles" are checked as
-// well as "/articles". Anchors and query strings are ignored, and so are links
-// to other sites, other schemes (mailto:, tel:) and Next's own files (/_next/).
-// Prints each broken link with the page it's on, and exits 1 if there are any.
+// well as "/articles". Links written with the site's full address, such as
+// https://example.com/articles, are checked too. Anchors and query strings are
+// ignored, and so are links to other sites, other schemes (mailto:, tel:) and
+// Next's own files (/_next/). Prints each broken link with the page it's on,
+// and exits 1 if there are any.
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
+
+import nextEnv from '@next/env'
 
 const app = process.argv[2]
 if (!app) {
@@ -17,9 +21,31 @@ if (!app) {
   process.exit(2)
 }
 
-// Any origin will do: it only gives relative links something to resolve
-// against, and tells this site's links apart from other sites'.
-const site = 'https://site.invalid'
+// The site's own address, read the way next build reads it: from the
+// environment (as in CI), or else from the .env files (such as .env.local).
+nextEnv.loadEnvConfig(process.cwd(), false, { info() {}, error: console.error })
+const configured = process.env.NEXT_PUBLIC_SITE_URL
+let site
+try {
+  site = new URL(configured || 'https://site.invalid')
+} catch {
+  console.error(`NEXT_PUBLIC_SITE_URL isn't a full web address: ${configured}`)
+  process.exit(2)
+}
+if (!configured) {
+  console.warn(
+    "NEXT_PUBLIC_SITE_URL isn't set, so links written with the site's full address are treated as other sites.",
+  )
+}
+
+// A link is to this site when it has the site's host name, over http or https.
+// The scheme can differ: http://example.com/articles still means this site.
+function isThisSite(url) {
+  return (
+    (url.protocol === 'https:' || url.protocol === 'http:') &&
+    url.host === site.host
+  )
+}
 
 // The address a built page is served at: index.html is /, about.html is
 // /about, collection/connie.html is /collection/connie.
@@ -79,13 +105,13 @@ for (const page of pages) {
   for (const href of hrefsIn(html)) {
     let url
     try {
-      url = new URL(href, site + from)
+      url = new URL(href, new URL(from, site))
     } catch {
       broken.add(`  ${from} has a link that isn't a valid address: ${href}`)
       continue
     }
 
-    if (url.origin !== site) continue // another site, or mailto:, tel: and so on
+    if (!isThisSite(url)) continue // another site, or mailto:, tel: and so on
     if (url.pathname.startsWith('/_next/')) continue
 
     if (!existsSync(fileFor(url.pathname))) {
