@@ -29,14 +29,16 @@ function PieceCard({ piece, isFirst }: { piece: Piece; isFirst: boolean }) {
   return (
     <Card as="article">
       {/* order-first puts the photo above the date, which is also order-first
-          but comes later. Next resizes it to suit the screen. */}
+          but comes later. Next resizes it to suit the screen. relative z-10
+          keeps it above Card.Link's hover background (z-0), as the card's text
+          is, and below the link's clickable overlay (z-20). */}
       <Image
         src={mainPhoto.src}
         alt={mainPhoto.alt}
         sizes="(min-width: 768px) 48rem, 100vw"
         loading={isFirst ? 'eager' : 'lazy'}
         fetchPriority={isFirst ? 'high' : 'auto'}
-        className="order-first mb-4 h-auto w-full rounded-2xl bg-zinc-100 dark:bg-zinc-800"
+        className="relative z-10 order-first mb-4 h-auto w-full rounded-2xl bg-zinc-100 dark:bg-zinc-800"
       />
       <Card.Title href={`/collection/${piece.slug}`}>{piece.title}</Card.Title>
       {/* Shown as written: "c. 1780", "1950s", "Late Georgian".
