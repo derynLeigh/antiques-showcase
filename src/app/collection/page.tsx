@@ -1,4 +1,5 @@
 import { type Metadata } from 'next'
+import Image from 'next/image'
 
 import { Card } from '@/components/Card'
 import { SimpleLayout } from '@/components/SimpleLayout'
@@ -19,8 +20,19 @@ export const metadata: Metadata = {
 }
 
 function PieceCard({ piece }: { piece: Piece }) {
+  // The first photo is the main one, and the schema makes sure there is one.
+  const [mainPhoto] = piece.images
+
   return (
     <Card as="article">
+      {/* order-first puts the photo above the date, which is also order-first
+          but comes later. Next resizes it to suit the screen. */}
+      <Image
+        src={mainPhoto.src}
+        alt={mainPhoto.alt}
+        sizes="(min-width: 768px) 48rem, 100vw"
+        className="order-first mb-4 h-auto w-full rounded-2xl bg-zinc-100 dark:bg-zinc-800"
+      />
       <Card.Title href={`/collection/${piece.slug}`}>{piece.title}</Card.Title>
       {/* Shown as written: "c. 1780", "1950s", "Late Georgian".
           Card.Eyebrow's own grey is too faint to read. It keeps its class
