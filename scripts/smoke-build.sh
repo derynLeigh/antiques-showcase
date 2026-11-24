@@ -58,24 +58,10 @@ for slug in smoke-connie smoke-georgian-tea-caddy; do
     fail "the collection page has no link to $slug"
 done
 
-# Each link is checked against the prebuilt pages: /about is about.html, and
-# / is index.html. Anchors and query strings are ignored, and so are links to
-# other sites (//) and to Next's own files (/_next/).
-app=.next/server/app
-broken=$(
-  find "$app" -name '*.html' -print0 |
-    { xargs -0 grep -HoE '<a [^>]*href="/[^"]*"' || true; } |
-    sed -E 's|^'"$app"'/(.*)\.html:.*href="([^"#?]*)[^"]*"$|\1 \2|' |
-    while read -r from to; do
-      case $to in //* | /_next/*) continue ;; esac
-      target=${to#/}
-      target=${target%/}
-      [ -f "$app/${target:-index}.html" ] || echo "  $from links to $to"
-    done |
-    sort -u
-)
-[ -z "$broken" ] || fail "links to pages that weren't built:
-$broken"
+# Relative links ("articles", "../about") are resolved against the page
+# they're on, as a browser would. See check-links.mjs.
+node scripts/check-links.mjs .next/server/app ||
+  fail "some links lead to pages that weren't built (listed above)"
 
 echo "== Smoke build 2 of 2: a piece left as the unfilled template"
 cp -R "$pieces/_template" "$pieces/smoke-unfilled"
