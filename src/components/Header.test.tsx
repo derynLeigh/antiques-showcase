@@ -52,7 +52,7 @@ describe('Header', () => {
       ).toBeInTheDocument()
     })
 
-    it('lists About and Articles', () => {
+    it('lists About and Collection', () => {
       render(<Header />)
 
       const nav = screen.getByRole('navigation', { name: 'Main' })
@@ -60,18 +60,18 @@ describe('Header', () => {
 
       expect(links.map((link) => link.textContent)).toEqual([
         'About',
-        'Articles',
+        'Collection',
       ])
     })
 
     it('marks the link for the current page', () => {
-      pathname.current = '/articles'
+      pathname.current = '/collection'
       render(<Header />)
 
       const nav = screen.getByRole('navigation', { name: 'Main' })
 
       expect(
-        within(nav).getByRole('link', { name: 'Articles', current: 'page' }),
+        within(nav).getByRole('link', { name: 'Collection', current: 'page' }),
       ).toBeInTheDocument()
       expect(
         within(nav).getByRole('link', { name: 'About', current: false }),
@@ -89,7 +89,7 @@ describe('Header', () => {
       expect(nav).toHaveAccessibleName('Main')
     })
 
-    it('lists About and Articles', async () => {
+    it('lists About and Collection', async () => {
       const user = userEvent.setup()
       render(<Header />)
 
@@ -98,19 +98,19 @@ describe('Header', () => {
 
       expect(links.map((link) => link.textContent)).toEqual([
         'About',
-        'Articles',
+        'Collection',
       ])
     })
 
     it('marks the link for the current page', async () => {
       const user = userEvent.setup()
-      pathname.current = '/articles'
+      pathname.current = '/collection'
       render(<Header />)
 
       const nav = await openMobileNav(user)
 
       expect(
-        within(nav).getByRole('link', { name: 'Articles', current: 'page' }),
+        within(nav).getByRole('link', { name: 'Collection', current: 'page' }),
       ).toBeInTheDocument()
       expect(
         within(nav).getByRole('link', { name: 'About', current: false }),

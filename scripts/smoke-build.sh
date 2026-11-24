@@ -3,7 +3,8 @@
 # until the collection has pieces. Checks that:
 #   1. valid pieces bundle, their photos process, and each gets a prebuilt page
 #      with its own title and link preview tags, linked from the collection page
-#   2. a piece with problems stops the build, listing what to fix
+#   2. every link from one page to another leads to a page that was built
+#   3. a piece with problems stops the build, listing what to fix
 #
 # The test fixtures are copied in under smoke- names and removed on exit, even
 # after a failure. Afterwards .next holds the smoke build; run npm run build
@@ -57,6 +58,11 @@ for slug in smoke-connie smoke-georgian-tea-caddy; do
     fail "the collection page has no link to $slug"
 done
 
+# Relative links ("articles", "../about") are resolved against the page
+# they're on, as a browser would. See check-links.mjs.
+node scripts/check-links.mjs .next/server/app ||
+  fail "some links lead to pages that weren't built (listed above)"
+
 echo "== Smoke build 2 of 2: a piece left as the unfilled template"
 cp -R "$pieces/_template" "$pieces/smoke-unfilled"
 if output=$(npx next build 2>&1); then
@@ -69,4 +75,4 @@ grep -q 'smoke-unfilled: title is required' <<<"$output" ||
   fail "the problems don't name the unfilled piece:
 $output"
 
-echo "Smoke build passed: valid pieces build, and a piece with problems stops the build."
+echo "Smoke build passed: valid pieces build, every link leads to a built page, and a piece with problems stops the build."

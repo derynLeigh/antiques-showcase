@@ -2,5 +2,5 @@
 // read from this list, so they always match.
 export const siteNavigation = [
   { href: '/about', label: 'About' },
-  { href: '/articles', label: 'Articles' },
+  { href: '/collection', label: 'Collection' },
 ] as const
