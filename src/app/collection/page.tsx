@@ -19,7 +19,10 @@ export const metadata: Metadata = {
   twitter: { card: 'summary', title, description },
 }
 
-function PieceCard({ piece }: { piece: Piece }) {
+// The first card's photo is usually the largest thing on screen when the page
+// opens, so it loads straight away, ahead of other images. The rest load as
+// they're scrolled to.
+function PieceCard({ piece, isFirst }: { piece: Piece; isFirst: boolean }) {
   // The first photo is the main one, and the schema makes sure there is one.
   const [mainPhoto] = piece.images
 
@@ -31,6 +34,8 @@ function PieceCard({ piece }: { piece: Piece }) {
         src={mainPhoto.src}
         alt={mainPhoto.alt}
         sizes="(min-width: 768px) 48rem, 100vw"
+        loading={isFirst ? 'eager' : 'lazy'}
+        fetchPriority={isFirst ? 'high' : 'auto'}
         className="order-first mb-4 h-auto w-full rounded-2xl bg-zinc-100 dark:bg-zinc-800"
       />
       <Card.Title href={`/collection/${piece.slug}`}>{piece.title}</Card.Title>
@@ -58,8 +63,8 @@ export default async function CollectionPage() {
         </p>
       ) : (
         <div className="flex max-w-3xl flex-col space-y-16">
-          {pieces.map((piece) => (
-            <PieceCard key={piece.slug} piece={piece} />
+          {pieces.map((piece, index) => (
+            <PieceCard key={piece.slug} piece={piece} isFirst={index === 0} />
           ))}
         </div>
       )}
