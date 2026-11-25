@@ -130,6 +130,18 @@ describe('PiecePage', () => {
     })
   })
 
+  // teaCaddy gives none of origin, maker, materials or dimensions.
+  describe('when no facts are known', () => {
+    it('leaves out the key facts, heading and all', async () => {
+      await renderPiecePage('georgian-tea-caddy')
+
+      expect(
+        screen.queryByRole('heading', { level: 2, name: 'Key facts' }),
+      ).not.toBeInTheDocument()
+      expect(screen.queryAllByRole('term')).toHaveLength(0)
+    })
+  })
+
   describe('when no piece has that slug', () => {
     it('shows the not-found page', async () => {
       getPiece.mockResolvedValue(undefined)
