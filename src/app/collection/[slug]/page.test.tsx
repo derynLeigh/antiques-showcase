@@ -66,6 +66,33 @@ describe('PiecePage', () => {
     expect(screen.getByText('c. 1780')).toBeInTheDocument()
   })
 
+  // Each label is a term and each value its definition, so checking both
+  // lists in order pairs every label with its value. Values are free text,
+  // shown as written.
+  it('shows each known fact with its label, exactly as written', async () => {
+    getPiece.mockResolvedValue({
+      ...teaCaddy,
+      origin: 'London, England',
+      maker: 'Hester Bateman',
+      materials: 'Sterling silver, with an ivory finial',
+      dimensions: '5¼ in high, 4 in wide',
+    })
+
+    await renderPiecePage('georgian-tea-caddy')
+
+    expect(screen.getAllByRole('term').map((term) => term.textContent)).toEqual(
+      ['Origin', 'Maker', 'Materials', 'Dimensions'],
+    )
+    expect(
+      screen.getAllByRole('definition').map((value) => value.textContent),
+    ).toEqual([
+      'London, England',
+      'Hester Bateman',
+      'Sterling silver, with an ivory finial',
+      '5¼ in high, 4 in wide',
+    ])
+  })
+
   describe('when no piece has that slug', () => {
     it('shows the not-found page', async () => {
       getPiece.mockResolvedValue(undefined)
