@@ -93,6 +93,17 @@ describe('PiecePage', () => {
     ])
   })
 
+  // The heading lets screen reader users jump straight to the facts.
+  it('heads the key facts with the level-2 heading Key facts', async () => {
+    getPiece.mockResolvedValue({ ...teaCaddy, maker: 'Hester Bateman' })
+
+    await renderPiecePage('georgian-tea-caddy')
+
+    expect(
+      screen.getByRole('heading', { level: 2, name: 'Key facts' }),
+    ).toBeInTheDocument()
+  })
+
   // The schema turns blank text into not given, so a fact left blank in the
   // piece's file is left out here too.
   describe("when a fact isn't known", () => {
