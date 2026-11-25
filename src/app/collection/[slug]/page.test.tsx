@@ -93,6 +93,32 @@ describe('PiecePage', () => {
     ])
   })
 
+  // The schema turns blank text into not given, so a fact left blank in the
+  // piece's file is left out here too.
+  describe("when a fact isn't known", () => {
+    it('leaves out its label and value', async () => {
+      getPiece.mockResolvedValue({
+        ...teaCaddy,
+        origin: 'London, England',
+        materials: 'Sterling silver, with an ivory finial',
+        dimensions: '5¼ in high, 4 in wide',
+      })
+
+      await renderPiecePage('georgian-tea-caddy')
+
+      expect(
+        screen.getAllByRole('term').map((term) => term.textContent),
+      ).toEqual(['Origin', 'Materials', 'Dimensions'])
+      expect(
+        screen.getAllByRole('definition').map((value) => value.textContent),
+      ).toEqual([
+        'London, England',
+        'Sterling silver, with an ivory finial',
+        '5¼ in high, 4 in wide',
+      ])
+    })
+  })
+
   describe('when no piece has that slug', () => {
     it('shows the not-found page', async () => {
       getPiece.mockResolvedValue(undefined)
