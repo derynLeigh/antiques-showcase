@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import PiecePage, {
@@ -103,6 +103,24 @@ describe('PiecePage', () => {
       "Close-up of the model airliner's triple tail fins",
       "The chrome stand, with the maker's plate on its base",
     ])
+  })
+
+  // jsdom doesn't name a figure from its caption, so each figure is checked
+  // in order. A photo with no caption has no text in its figure.
+  it('shows a caption with its photo when one is given', async () => {
+    getPiece.mockResolvedValue(connie)
+
+    await renderPiecePage('connie')
+
+    const [side, tail, stand] = screen.getAllByRole('figure')
+    expect(
+      within(tail).getByRole('img', {
+        name: "Close-up of the model airliner's triple tail fins",
+      }),
+    ).toBeInTheDocument()
+    expect(tail).toHaveTextContent('Triple tail fins, each with its own rudder')
+    expect(side).toHaveTextContent(/^$/)
+    expect(stand).toHaveTextContent(/^$/)
   })
 
   // Each label is a term and each value its definition, so checking both
