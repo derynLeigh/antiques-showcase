@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import PiecePage, {
@@ -37,6 +37,30 @@ const teaCaddy: Piece = {
   Body: () => <p>Tea was precious enough to keep under lock and key.</p>,
 }
 
+// Three photos, in the curator's order. Only the second has a caption.
+const connie: Piece = {
+  ...teaCaddy,
+  slug: 'connie',
+  title: "Lockheed Constellation 'Connie' shop display model",
+  summary: 'A 1950s shop display model with a 22 inch wingspan.',
+  made: '1950s',
+  images: [
+    {
+      src: { src: '/connie-side.jpg', width: 100, height: 100 },
+      alt: 'Silver four-engined airliner model on a stand, from the side',
+    },
+    {
+      src: { src: '/connie-tail.jpg', width: 100, height: 100 },
+      alt: "Close-up of the model airliner's triple tail fins",
+      caption: 'Triple tail fins, each with its own rudder',
+    },
+    {
+      src: { src: '/connie-stand.jpg', width: 100, height: 100 },
+      alt: "The chrome stand, with the maker's plate on its base",
+    },
+  ],
+}
+
 // Next passes the slug from the address as a promise.
 async function renderPiecePage(slug: string) {
   render(await PiecePage({ params: Promise.resolve({ slug }) }))
@@ -64,6 +88,39 @@ describe('PiecePage', () => {
     await renderPiecePage('georgian-tea-caddy')
 
     expect(screen.getByText('c. 1780')).toBeInTheDocument()
+  })
+
+  // The alt text is what screen readers read out in place of each photo.
+  it('shows every photo of the piece in order, described by its alt text', async () => {
+    getPiece.mockResolvedValue(connie)
+
+    await renderPiecePage('connie')
+
+    expect(
+      screen.getAllByRole('img').map((photo) => photo.getAttribute('alt')),
+    ).toEqual([
+      'Silver four-engined airliner model on a stand, from the side',
+      "Close-up of the model airliner's triple tail fins",
+      "The chrome stand, with the maker's plate on its base",
+    ])
+  })
+
+  // jsdom doesn't name a figure from its caption, so each figure is checked
+  // in order. A photo with no caption has no text in its figure.
+  it('shows a caption with its photo when one is given', async () => {
+    getPiece.mockResolvedValue(connie)
+
+    await renderPiecePage('connie')
+
+    const [side, tail, stand] = screen.getAllByRole('figure')
+    expect(
+      within(tail).getByRole('img', {
+        name: "Close-up of the model airliner's triple tail fins",
+      }),
+    ).toBeInTheDocument()
+    expect(tail).toHaveTextContent('Triple tail fins, each with its own rudder')
+    expect(side).toHaveTextContent(/^$/)
+    expect(stand).toHaveTextContent(/^$/)
   })
 
   // Each label is a term and each value its definition, so checking both
