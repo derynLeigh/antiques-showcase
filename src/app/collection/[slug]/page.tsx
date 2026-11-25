@@ -65,13 +65,20 @@ export default async function PiecePage({
             {piece.made}
           </p>
         </header>
-        {/* In the curator's order. The first is the main photo. */}
+        {/* In the curator's order. The first is the main photo, usually the
+            largest thing on screen when the page opens, so it loads straight
+            away, ahead of other images. The rest load as they're scrolled to.
+            sizes matches the article's width (max-w-2xl, 42rem), so a phone
+            downloads a phone-sized copy. */}
         <div className="mt-8 space-y-8">
-          {piece.images.map((photo) => (
+          {piece.images.map((photo, index) => (
             <figure key={photo.src.src}>
               <Image
                 src={photo.src}
                 alt={photo.alt}
+                sizes="(min-width: 768px) 42rem, 100vw"
+                loading={index === 0 ? 'eager' : 'lazy'}
+                fetchPriority={index === 0 ? 'high' : 'auto'}
                 className="h-auto w-full rounded-2xl bg-zinc-100 dark:bg-zinc-800"
               />
               {/* Left out when there's no caption, rather than left empty. */}
