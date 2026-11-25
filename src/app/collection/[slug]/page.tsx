@@ -1,4 +1,5 @@
 import { type Metadata } from 'next'
+import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { Fragment } from 'react'
 
@@ -64,6 +65,17 @@ export default async function PiecePage({
             {piece.made}
           </p>
         </header>
+        {/* In the curator's order. The first is the main photo. */}
+        <div className="mt-8 space-y-8">
+          {piece.images.map((photo) => (
+            <Image
+              key={photo.src.src}
+              src={photo.src}
+              alt={photo.alt}
+              className="h-auto w-full rounded-2xl bg-zinc-100 dark:bg-zinc-800"
+            />
+          ))}
+        </div>
         {facts.length > 0 && (
           <section className="mt-8">
             <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
