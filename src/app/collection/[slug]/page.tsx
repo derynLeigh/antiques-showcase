@@ -55,6 +55,30 @@ export default async function PiecePage({
             {piece.made}
           </p>
         </header>
+        {/* Each value is shown as written: "22 inch wingspan", not a
+            converted measurement. */}
+        <dl className="mt-8 grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-base">
+          <dt className="font-medium text-zinc-800 dark:text-zinc-100">
+            Origin
+          </dt>
+          <dd className="text-zinc-600 dark:text-zinc-400">{piece.origin}</dd>
+          <dt className="font-medium text-zinc-800 dark:text-zinc-100">
+            Maker
+          </dt>
+          <dd className="text-zinc-600 dark:text-zinc-400">{piece.maker}</dd>
+          <dt className="font-medium text-zinc-800 dark:text-zinc-100">
+            Materials
+          </dt>
+          <dd className="text-zinc-600 dark:text-zinc-400">
+            {piece.materials}
+          </dd>
+          <dt className="font-medium text-zinc-800 dark:text-zinc-100">
+            Dimensions
+          </dt>
+          <dd className="text-zinc-600 dark:text-zinc-400">
+            {piece.dimensions}
+          </dd>
+        </dl>
       </article>
     </Container>
   )
