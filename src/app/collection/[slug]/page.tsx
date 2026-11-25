@@ -68,12 +68,19 @@ export default async function PiecePage({
         {/* In the curator's order. The first is the main photo. */}
         <div className="mt-8 space-y-8">
           {piece.images.map((photo) => (
-            <Image
-              key={photo.src.src}
-              src={photo.src}
-              alt={photo.alt}
-              className="h-auto w-full rounded-2xl bg-zinc-100 dark:bg-zinc-800"
-            />
+            <figure key={photo.src.src}>
+              <Image
+                src={photo.src}
+                alt={photo.alt}
+                className="h-auto w-full rounded-2xl bg-zinc-100 dark:bg-zinc-800"
+              />
+              {/* Left out when there's no caption, rather than left empty. */}
+              {photo.caption && (
+                <figcaption className="mt-3 text-sm text-zinc-600 dark:text-zinc-400">
+                  {photo.caption}
+                </figcaption>
+              )}
+            </figure>
           ))}
         </div>
         {facts.length > 0 && (
