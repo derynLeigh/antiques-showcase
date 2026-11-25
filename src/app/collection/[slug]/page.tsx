@@ -1,5 +1,6 @@
 import { type Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import { Fragment } from 'react'
 
 import { Container } from '@/components/Container'
 import { getAllPieces, getPiece } from '@/lib/pieces'
@@ -43,6 +44,14 @@ export default async function PiecePage({
   const piece = await getPiece(slug)
   if (!piece) notFound()
 
+  // Only the facts that are known, so a label never has nothing after it.
+  const facts = [
+    { label: 'Origin', value: piece.origin },
+    { label: 'Maker', value: piece.maker },
+    { label: 'Materials', value: piece.materials },
+    { label: 'Dimensions', value: piece.dimensions },
+  ].filter(({ value }) => value !== undefined)
+
   return (
     <Container className="mt-16 lg:mt-32">
       <article className="mx-auto max-w-2xl">
@@ -55,6 +64,25 @@ export default async function PiecePage({
             {piece.made}
           </p>
         </header>
+        {facts.length > 0 && (
+          <section className="mt-8">
+            <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+              Key facts
+            </h2>
+            {/* Each value is shown as written: "22 inch wingspan", not a
+                converted measurement. */}
+            <dl className="mt-4 grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-base">
+              {facts.map(({ label, value }) => (
+                <Fragment key={label}>
+                  <dt className="font-medium text-zinc-800 dark:text-zinc-100">
+                    {label}
+                  </dt>
+                  <dd className="text-zinc-600 dark:text-zinc-400">{value}</dd>
+                </Fragment>
+              ))}
+            </dl>
+          </section>
+        )}
       </article>
     </Container>
   )

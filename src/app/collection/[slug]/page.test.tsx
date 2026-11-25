@@ -66,6 +66,82 @@ describe('PiecePage', () => {
     expect(screen.getByText('c. 1780')).toBeInTheDocument()
   })
 
+  // Each label is a term and each value its definition, so checking both
+  // lists in order pairs every label with its value. Values are free text,
+  // shown as written.
+  it('shows each known fact with its label, exactly as written', async () => {
+    getPiece.mockResolvedValue({
+      ...teaCaddy,
+      origin: 'London, England',
+      maker: 'Hester Bateman',
+      materials: 'Sterling silver, with an ivory finial',
+      dimensions: '5¼ in high, 4 in wide',
+    })
+
+    await renderPiecePage('georgian-tea-caddy')
+
+    expect(screen.getAllByRole('term').map((term) => term.textContent)).toEqual(
+      ['Origin', 'Maker', 'Materials', 'Dimensions'],
+    )
+    expect(
+      screen.getAllByRole('definition').map((value) => value.textContent),
+    ).toEqual([
+      'London, England',
+      'Hester Bateman',
+      'Sterling silver, with an ivory finial',
+      '5¼ in high, 4 in wide',
+    ])
+  })
+
+  // The heading lets screen reader users jump straight to the facts.
+  it('heads the key facts with the level-2 heading Key facts', async () => {
+    getPiece.mockResolvedValue({ ...teaCaddy, maker: 'Hester Bateman' })
+
+    await renderPiecePage('georgian-tea-caddy')
+
+    expect(
+      screen.getByRole('heading', { level: 2, name: 'Key facts' }),
+    ).toBeInTheDocument()
+  })
+
+  // The schema turns blank text into not given, so a fact left blank in the
+  // piece's file is left out here too.
+  describe("when a fact isn't known", () => {
+    it('leaves out its label and value', async () => {
+      getPiece.mockResolvedValue({
+        ...teaCaddy,
+        origin: 'London, England',
+        materials: 'Sterling silver, with an ivory finial',
+        dimensions: '5¼ in high, 4 in wide',
+      })
+
+      await renderPiecePage('georgian-tea-caddy')
+
+      expect(
+        screen.getAllByRole('term').map((term) => term.textContent),
+      ).toEqual(['Origin', 'Materials', 'Dimensions'])
+      expect(
+        screen.getAllByRole('definition').map((value) => value.textContent),
+      ).toEqual([
+        'London, England',
+        'Sterling silver, with an ivory finial',
+        '5¼ in high, 4 in wide',
+      ])
+    })
+  })
+
+  // teaCaddy gives none of origin, maker, materials or dimensions.
+  describe('when no facts are known', () => {
+    it('leaves out the key facts, heading and all', async () => {
+      await renderPiecePage('georgian-tea-caddy')
+
+      expect(
+        screen.queryByRole('heading', { level: 2, name: 'Key facts' }),
+      ).not.toBeInTheDocument()
+      expect(screen.queryAllByRole('term')).toHaveLength(0)
+    })
+  })
+
   describe('when no piece has that slug', () => {
     it('shows the not-found page', async () => {
       getPiece.mockResolvedValue(undefined)
