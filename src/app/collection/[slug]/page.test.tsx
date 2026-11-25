@@ -37,6 +37,30 @@ const teaCaddy: Piece = {
   Body: () => <p>Tea was precious enough to keep under lock and key.</p>,
 }
 
+// Three photos, in the curator's order. Only the second has a caption.
+const connie: Piece = {
+  ...teaCaddy,
+  slug: 'connie',
+  title: "Lockheed Constellation 'Connie' shop display model",
+  summary: 'A 1950s shop display model with a 22 inch wingspan.',
+  made: '1950s',
+  images: [
+    {
+      src: { src: '/connie-side.jpg', width: 100, height: 100 },
+      alt: 'Silver four-engined airliner model on a stand, from the side',
+    },
+    {
+      src: { src: '/connie-tail.jpg', width: 100, height: 100 },
+      alt: "Close-up of the model airliner's triple tail fins",
+      caption: 'Triple tail fins, each with its own rudder',
+    },
+    {
+      src: { src: '/connie-stand.jpg', width: 100, height: 100 },
+      alt: "The chrome stand, with the maker's plate on its base",
+    },
+  ],
+}
+
 // Next passes the slug from the address as a promise.
 async function renderPiecePage(slug: string) {
   render(await PiecePage({ params: Promise.resolve({ slug }) }))
@@ -64,6 +88,21 @@ describe('PiecePage', () => {
     await renderPiecePage('georgian-tea-caddy')
 
     expect(screen.getByText('c. 1780')).toBeInTheDocument()
+  })
+
+  // The alt text is what screen readers read out in place of each photo.
+  it('shows every photo of the piece in order, described by its alt text', async () => {
+    getPiece.mockResolvedValue(connie)
+
+    await renderPiecePage('connie')
+
+    expect(
+      screen.getAllByRole('img').map((photo) => photo.getAttribute('alt')),
+    ).toEqual([
+      'Silver four-engined airliner model on a stand, from the side',
+      "Close-up of the model airliner's triple tail fins",
+      "The chrome stand, with the maker's plate on its base",
+    ])
   })
 
   // Each label is a term and each value its definition, so checking both
