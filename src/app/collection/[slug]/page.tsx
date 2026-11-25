@@ -64,23 +64,25 @@ export default async function PiecePage({
             {piece.made}
           </p>
         </header>
-        <section className="mt-8">
-          <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-            Key facts
-          </h2>
-          {/* Each value is shown as written: "22 inch wingspan", not a
-              converted measurement. */}
-          <dl className="mt-4 grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-base">
-            {facts.map(({ label, value }) => (
-              <Fragment key={label}>
-                <dt className="font-medium text-zinc-800 dark:text-zinc-100">
-                  {label}
-                </dt>
-                <dd className="text-zinc-600 dark:text-zinc-400">{value}</dd>
-              </Fragment>
-            ))}
-          </dl>
-        </section>
+        {facts.length > 0 && (
+          <section className="mt-8">
+            <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+              Key facts
+            </h2>
+            {/* Each value is shown as written: "22 inch wingspan", not a
+                converted measurement. */}
+            <dl className="mt-4 grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-base">
+              {facts.map(({ label, value }) => (
+                <Fragment key={label}>
+                  <dt className="font-medium text-zinc-800 dark:text-zinc-100">
+                    {label}
+                  </dt>
+                  <dd className="text-zinc-600 dark:text-zinc-400">{value}</dd>
+                </Fragment>
+              ))}
+            </dl>
+          </section>
+        )}
       </article>
     </Container>
   )
