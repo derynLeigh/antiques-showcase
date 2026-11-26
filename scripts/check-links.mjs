@@ -25,10 +25,10 @@ if (!app) {
 // environment (as in CI), or else from the .env files (such as .env.local).
 nextEnv.loadEnvConfig(process.cwd(), false, { info() {}, error: console.error })
 const configured = process.env.NEXT_PUBLIC_SITE_URL
-let site
-try {
-  site = new URL(configured || 'https://site.invalid')
-} catch {
+// new URL() also accepts addresses that aren't web addresses, such as
+// localhost:3000 (read as the scheme localhost:) and ftp://example.com.
+const site = URL.parse(configured || 'https://site.invalid')
+if (site?.protocol !== 'https:' && site?.protocol !== 'http:') {
   console.error(`NEXT_PUBLIC_SITE_URL isn't a full web address: ${configured}`)
   process.exit(2)
 }

@@ -9,18 +9,22 @@
 export function siteUrl(): URL {
   const configured = process.env.NEXT_PUBLIC_SITE_URL
   if (configured) {
-    try {
-      return new URL(configured)
-    } catch {
-      // The same wording as scripts/check-links.mjs.
-      throw new Error(
-        `NEXT_PUBLIC_SITE_URL isn't a full web address: ${configured}`,
-      )
-    }
+    if (isWebAddress(configured)) return new URL(configured)
+    // The same wording as scripts/check-links.mjs.
+    throw new Error(
+      `NEXT_PUBLIC_SITE_URL isn't a full web address: ${configured}`,
+    )
   }
 
   const vercelProduction = process.env.VERCEL_PROJECT_PRODUCTION_URL
   if (vercelProduction) return new URL(`https://${vercelProduction}`)
 
   return new URL('http://localhost:3000')
+}
+
+// new URL() also accepts addresses that aren't web addresses, such as
+// localhost:3000 (read as the scheme localhost:) and ftp://example.com.
+function isWebAddress(address: string) {
+  const protocol = URL.parse(address)?.protocol
+  return protocol === 'https:' || protocol === 'http:'
 }
