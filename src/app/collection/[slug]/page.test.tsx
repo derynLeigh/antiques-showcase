@@ -272,6 +272,9 @@ describe('PiecePage', () => {
       'Conversation with a retired BOAC travel agent, 2019',
     )
     expect(within(sources[1]).queryByRole('link')).not.toBeInTheDocument()
+    // An <a> with no href has no link role, so the check above can't see it,
+    // but it would still look like a link that does nothing when clicked.
+    expect(sources[1].querySelector('a')).toBeNull()
   })
 
   // teaCaddy has no sources. The schema makes a missing list an empty one.
