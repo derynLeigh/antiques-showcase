@@ -66,6 +66,14 @@ async function renderPiecePage(slug: string) {
   render(await PiecePage({ params: Promise.resolve({ slug }) }))
 }
 
+// True when later comes after earlier in the page, as a screen reader or a
+// visitor scrolling down would reach them.
+function comesAfter(later: Element, earlier: Element) {
+  return Boolean(
+    earlier.compareDocumentPosition(later) & Node.DOCUMENT_POSITION_FOLLOWING,
+  )
+}
+
 describe('PiecePage', () => {
   beforeEach(() => {
     getPiece.mockResolvedValue(teaCaddy)
@@ -197,6 +205,33 @@ describe('PiecePage', () => {
       ).not.toBeInTheDocument()
       expect(screen.queryAllByRole('term')).toHaveLength(0)
     })
+  })
+
+  // The story is the MDX below the piece's details, in the curator's voice.
+  it("shows the piece's story below the photos and key facts", async () => {
+    getPiece.mockResolvedValue({
+      ...connie,
+      maker: 'Lockheed',
+      Body: () => (
+        <p>
+          Travel agents used models like this to sell the glamour of flying.
+        </p>
+      ),
+    })
+
+    await renderPiecePage('connie')
+
+    const story = screen.getByText(
+      'Travel agents used models like this to sell the glamour of flying.',
+    )
+    const photos = screen.getAllByRole('img')
+    const lastPhoto = photos[photos.length - 1]
+    const keyFacts = screen.getByRole('heading', {
+      level: 2,
+      name: 'Key facts',
+    })
+    expect(comesAfter(story, lastPhoto)).toBe(true)
+    expect(comesAfter(story, keyFacts)).toBe(true)
   })
 
   describe('when no piece has that slug', () => {
