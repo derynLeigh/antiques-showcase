@@ -36,6 +36,16 @@ describe('metadata', () => {
 
       expect(metadata.robots).toEqual({ index: false, follow: false })
     })
+
+    // Only the exact word true lets search engines in, so a setting of false
+    // can't let them in by mistake.
+    it('still asks them not to when it is false', async () => {
+      vi.stubEnv('NEXT_PUBLIC_ALLOW_INDEXING', 'false')
+
+      const metadata = await loadMetadata()
+
+      expect(metadata.robots).toEqual({ index: false, follow: false })
+    })
   })
 
   describe('when NEXT_PUBLIC_ALLOW_INDEXING is true', () => {
