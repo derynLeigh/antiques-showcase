@@ -2,10 +2,14 @@ import { type Metadata } from 'next'
 
 import { Providers } from '@/app/providers'
 import { Layout } from '@/components/Layout'
+import { siteUrl } from '@/lib/site'
 
 import '@/styles/tailwind.css'
 
 export const metadata: Metadata = {
+  // Turns relative URLs in link previews, such as a piece's photo, into full
+  // ones on the site's own address.
+  metadataBase: siteUrl(),
   title: {
     template: '%s - Site Name',
     default: 'Site Name - Placeholder tagline',
