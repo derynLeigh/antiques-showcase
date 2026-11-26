@@ -31,10 +31,13 @@ export default {
         css: {
           '--tw-prose-body': theme('colors.zinc.600'),
           '--tw-prose-headings': theme('colors.zinc.900'),
-          '--tw-prose-links': theme('colors.teal.500'),
-          '--tw-prose-links-hover': theme('colors.teal.600'),
-          '--tw-prose-underline': theme('colors.teal.500 / 0.2'),
-          '--tw-prose-underline-hover': theme('colors.teal.500'),
+          // teal-700 and teal-800 keep links at least 4.5:1 on white (WCAG
+          // AA); the template's teal-500 and teal-600 fall below it. The
+          // underlines follow, as on the piece page's source links.
+          '--tw-prose-links': theme('colors.teal.700'),
+          '--tw-prose-links-hover': theme('colors.teal.800'),
+          '--tw-prose-underline': theme('colors.teal.700 / 0.3'),
+          '--tw-prose-underline-hover': theme('colors.teal.800'),
           '--tw-prose-bold': theme('colors.zinc.900'),
           '--tw-prose-counters': theme('colors.zinc.900'),
           '--tw-prose-bullets': theme('colors.zinc.900'),
