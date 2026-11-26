@@ -1,6 +1,7 @@
+import { Analytics } from '@vercel/analytics/next'
+
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
-import { Analytics } from "@vercel/analytics/next"
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -14,6 +15,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Header />
         <main className="flex-auto">{children}</main>
         <Footer />
+        {/* Vercel Web Analytics: counts page views without cookies or
+            anything that identifies a visitor, so the site needs no cookie
+            banner. It sends nothing in development, only on Vercel, and only
+            once Web Analytics is turned on for the project there. */}
         <Analytics />
       </div>
     </>
