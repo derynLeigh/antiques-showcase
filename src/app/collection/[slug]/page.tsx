@@ -122,8 +122,13 @@ export default async function PiecePage({
               Sources
             </h2>
             {/* A source with a web address links to it. One without, such as
-                a book or a conversation, is plain text. */}
-            <ul className="mt-4 space-y-2 text-base text-zinc-600 dark:text-zinc-400">
+                a book or a conversation, is plain text. role="list" keeps it a
+                list for VoiceOver: Safari drops list semantics when the
+                markers are styled away, as Tailwind does outside Prose. */}
+            <ul
+              role="list"
+              className="mt-4 space-y-2 text-base text-zinc-600 dark:text-zinc-400"
+            >
               {piece.sources.map((source, index) => (
                 <li key={index}>
                   {source.url ? (
