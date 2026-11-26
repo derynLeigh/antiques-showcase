@@ -114,6 +114,29 @@ export default async function PiecePage({
         <div className="mt-8">
           <piece.Body />
         </div>
+        <section className="mt-12">
+          <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+            Sources
+          </h2>
+          {/* A source with a web address links to it. One without, such as
+              a book or a conversation, is plain text. */}
+          <ul className="mt-4 space-y-2 text-base text-zinc-600 dark:text-zinc-400">
+            {piece.sources.map((source, index) => (
+              <li key={index}>
+                {source.url ? (
+                  <a
+                    href={source.url}
+                    className="text-teal-600 underline hover:text-teal-500 dark:text-teal-400 dark:hover:text-teal-300"
+                  >
+                    {source.label}
+                  </a>
+                ) : (
+                  source.label
+                )}
+              </li>
+            ))}
+          </ul>
+        </section>
       </article>
     </Container>
   )
