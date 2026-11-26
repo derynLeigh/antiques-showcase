@@ -66,6 +66,14 @@ async function renderPiecePage(slug: string) {
   render(await PiecePage({ params: Promise.resolve({ slug }) }))
 }
 
+// True when later comes after earlier in the page, as a screen reader or a
+// visitor scrolling down would reach them.
+function comesAfter(later: Element, earlier: Element) {
+  return Boolean(
+    earlier.compareDocumentPosition(later) & Node.DOCUMENT_POSITION_FOLLOWING,
+  )
+}
+
 describe('PiecePage', () => {
   beforeEach(() => {
     getPiece.mockResolvedValue(teaCaddy)
@@ -196,6 +204,88 @@ describe('PiecePage', () => {
         screen.queryByRole('heading', { level: 2, name: 'Key facts' }),
       ).not.toBeInTheDocument()
       expect(screen.queryAllByRole('term')).toHaveLength(0)
+    })
+  })
+
+  // The story is the MDX below the piece's details, in the curator's voice.
+  it("shows the piece's story below the photos and key facts", async () => {
+    getPiece.mockResolvedValue({
+      ...connie,
+      maker: 'Lockheed',
+      Body: () => (
+        <p>
+          Travel agents used models like this to sell the glamour of flying.
+        </p>
+      ),
+    })
+
+    await renderPiecePage('connie')
+
+    const story = screen.getByText(
+      'Travel agents used models like this to sell the glamour of flying.',
+    )
+    const photos = screen.getAllByRole('img')
+    const lastPhoto = photos[photos.length - 1]
+    const keyFacts = screen.getByRole('heading', {
+      level: 2,
+      name: 'Key facts',
+    })
+    expect(comesAfter(story, lastPhoto)).toBe(true)
+    expect(comesAfter(story, keyFacts)).toBe(true)
+  })
+
+  // A source with a web address links to it. One without, such as a book or
+  // a conversation, is listed as plain text.
+  it("lists the piece's sources below its story", async () => {
+    getPiece.mockResolvedValue({
+      ...connie,
+      sources: [
+        {
+          label: 'Lockheed Martin: the Constellation',
+          url: 'https://www.lockheedmartin.com/en-us/news/features/history/constellation.html',
+        },
+        { label: 'Conversation with a retired BOAC travel agent, 2019' },
+      ],
+      Body: () => <p>Travel agents used models like this.</p>,
+    })
+
+    await renderPiecePage('connie')
+
+    const heading = screen.getByRole('heading', { level: 2, name: 'Sources' })
+    expect(
+      comesAfter(
+        heading,
+        screen.getByText('Travel agents used models like this.'),
+      ),
+    ).toBe(true)
+    const sources = within(screen.getByRole('list')).getAllByRole('listitem')
+    expect(sources).toHaveLength(2)
+    expect(
+      within(sources[0]).getByRole('link', {
+        name: 'Lockheed Martin: the Constellation',
+      }),
+    ).toHaveAttribute(
+      'href',
+      'https://www.lockheedmartin.com/en-us/news/features/history/constellation.html',
+    )
+    expect(sources[1]).toHaveTextContent(
+      'Conversation with a retired BOAC travel agent, 2019',
+    )
+    expect(within(sources[1]).queryByRole('link')).not.toBeInTheDocument()
+    // An <a> with no href has no link role, so the check above can't see it,
+    // but it would still look like a link that does nothing when clicked.
+    expect(sources[1].querySelector('a')).toBeNull()
+  })
+
+  // teaCaddy has no sources. The schema makes a missing list an empty one.
+  describe('when the piece has no sources', () => {
+    it('leaves out the sources, heading and all', async () => {
+      await renderPiecePage('georgian-tea-caddy')
+
+      expect(
+        screen.queryByRole('heading', { level: 2, name: 'Sources' }),
+      ).not.toBeInTheDocument()
+      expect(screen.queryByRole('list')).not.toBeInTheDocument()
     })
   })
 

@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { Fragment } from 'react'
 
 import { Container } from '@/components/Container'
+import { Prose } from '@/components/Prose'
 import { getAllPieces, getPiece } from '@/lib/pieces'
 
 export const dynamicParams = false
@@ -107,6 +108,44 @@ export default async function PiecePage({
                 </Fragment>
               ))}
             </dl>
+          </section>
+        )}
+        {/* The story: the MDX below the piece's details, in the curator's
+            voice. Prose sets a comfortable size, line height and spacing for
+            reading on a phone, and styles the template's ## headings. */}
+        <Prose className="mt-8">
+          <piece.Body />
+        </Prose>
+        {piece.sources.length > 0 && (
+          <section className="mt-12">
+            <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+              Sources
+            </h2>
+            {/* A source with a web address links to it. One without, such as
+                a book or a conversation, is plain text. role="list" keeps it a
+                list for VoiceOver: Safari drops list semantics when the
+                markers are styled away, as Tailwind does outside Prose. The
+                light-mode link colours (teal-700, teal-800 on hover) keep at
+                least 4.5:1 contrast on white; lighter teals fall below it. */}
+            <ul
+              role="list"
+              className="mt-4 space-y-2 text-base text-zinc-600 dark:text-zinc-400"
+            >
+              {piece.sources.map((source, index) => (
+                <li key={index}>
+                  {source.url ? (
+                    <a
+                      href={source.url}
+                      className="text-teal-700 underline hover:text-teal-800 dark:text-teal-400 dark:hover:text-teal-300"
+                    >
+                      {source.label}
+                    </a>
+                  ) : (
+                    source.label
+                  )}
+                </li>
+              ))}
+            </ul>
           </section>
         )}
       </article>
