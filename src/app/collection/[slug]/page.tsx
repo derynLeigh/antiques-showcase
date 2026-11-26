@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { Fragment } from 'react'
 
 import { Container } from '@/components/Container'
+import { Prose } from '@/components/Prose'
 import { getAllPieces, getPiece } from '@/lib/pieces'
 
 export const dynamicParams = false
@@ -110,10 +111,11 @@ export default async function PiecePage({
           </section>
         )}
         {/* The story: the MDX below the piece's details, in the curator's
-            voice. */}
-        <div className="mt-8">
+            voice. Prose sets a comfortable size, line height and spacing for
+            reading on a phone, and styles the template's ## headings. */}
+        <Prose className="mt-8">
           <piece.Body />
-        </div>
+        </Prose>
         {piece.sources.length > 0 && (
           <section className="mt-12">
             <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
