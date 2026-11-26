@@ -124,7 +124,9 @@ export default async function PiecePage({
             {/* A source with a web address links to it. One without, such as
                 a book or a conversation, is plain text. role="list" keeps it a
                 list for VoiceOver: Safari drops list semantics when the
-                markers are styled away, as Tailwind does outside Prose. */}
+                markers are styled away, as Tailwind does outside Prose. The
+                light-mode link colours (teal-700, teal-800 on hover) keep at
+                least 4.5:1 contrast on white; lighter teals fall below it. */}
             <ul
               role="list"
               className="mt-4 space-y-2 text-base text-zinc-600 dark:text-zinc-400"
@@ -134,7 +136,7 @@ export default async function PiecePage({
                   {source.url ? (
                     <a
                       href={source.url}
-                      className="text-teal-600 underline hover:text-teal-500 dark:text-teal-400 dark:hover:text-teal-300"
+                      className="text-teal-700 underline hover:text-teal-800 dark:text-teal-400 dark:hover:text-teal-300"
                     >
                       {source.label}
                     </a>
