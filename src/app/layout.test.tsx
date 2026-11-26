@@ -24,4 +24,27 @@ describe('metadata', () => {
       new URL('https://antiques.example.org'),
     )
   })
+
+  // Until launch, search engines are asked not to list the site, so its
+  // placeholder pages don't appear in search results. At launch,
+  // NEXT_PUBLIC_ALLOW_INDEXING is set to true in Vercel's Production settings.
+  describe("when NEXT_PUBLIC_ALLOW_INDEXING isn't true", () => {
+    it('asks search engines not to list the site or follow its links', async () => {
+      vi.stubEnv('NEXT_PUBLIC_ALLOW_INDEXING', '')
+
+      const metadata = await loadMetadata()
+
+      expect(metadata.robots).toEqual({ index: false, follow: false })
+    })
+  })
+
+  describe('when NEXT_PUBLIC_ALLOW_INDEXING is true', () => {
+    it('lets search engines list the site and follow its links', async () => {
+      vi.stubEnv('NEXT_PUBLIC_ALLOW_INDEXING', 'true')
+
+      const metadata = await loadMetadata()
+
+      expect(metadata.robots).toEqual({ index: true, follow: true })
+    })
+  })
 })
