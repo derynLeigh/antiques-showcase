@@ -274,6 +274,18 @@ describe('PiecePage', () => {
     expect(within(sources[1]).queryByRole('link')).not.toBeInTheDocument()
   })
 
+  // teaCaddy has no sources. The schema makes a missing list an empty one.
+  describe('when the piece has no sources', () => {
+    it('leaves out the sources, heading and all', async () => {
+      await renderPiecePage('georgian-tea-caddy')
+
+      expect(
+        screen.queryByRole('heading', { level: 2, name: 'Sources' }),
+      ).not.toBeInTheDocument()
+      expect(screen.queryByRole('list')).not.toBeInTheDocument()
+    })
+  })
+
   describe('when no piece has that slug', () => {
     it('shows the not-found page', async () => {
       getPiece.mockResolvedValue(undefined)
