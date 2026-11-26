@@ -24,14 +24,19 @@ describe('siteUrl', () => {
     })
   })
 
+  // localhost:3000 and ftp://example.com are valid URLs, but not web
+  // addresses: the first reads as the scheme localhost: with no host.
   describe("when NEXT_PUBLIC_SITE_URL isn't a full web address", () => {
-    it('stops with an error naming the setting', () => {
-      settings('example.com', '')
+    it.each(['example.com', 'localhost:3000', 'ftp://example.com'])(
+      'stops with an error naming the setting (%s)',
+      (address) => {
+        settings(address, '')
 
-      expect(() => siteUrl()).toThrow(
-        "NEXT_PUBLIC_SITE_URL isn't a full web address: example.com",
-      )
-    })
+        expect(() => siteUrl()).toThrow(
+          `NEXT_PUBLIC_SITE_URL isn't a full web address: ${address}`,
+        )
+      },
+    )
   })
 
   // Vercel sets its production address, without https://, on every build.
