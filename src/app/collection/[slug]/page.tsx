@@ -109,6 +109,11 @@ export default async function PiecePage({
             </dl>
           </section>
         )}
+        {/* The story: the MDX below the piece's details, in the curator's
+            voice. */}
+        <div className="mt-8">
+          <piece.Body />
+        </div>
       </article>
     </Container>
   )
