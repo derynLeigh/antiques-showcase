@@ -234,6 +234,46 @@ describe('PiecePage', () => {
     expect(comesAfter(story, keyFacts)).toBe(true)
   })
 
+  // A source with a web address links to it. One without, such as a book or
+  // a conversation, is listed as plain text.
+  it("lists the piece's sources below its story", async () => {
+    getPiece.mockResolvedValue({
+      ...connie,
+      sources: [
+        {
+          label: 'Lockheed Martin: the Constellation',
+          url: 'https://www.lockheedmartin.com/en-us/news/features/history/constellation.html',
+        },
+        { label: 'Conversation with a retired BOAC travel agent, 2019' },
+      ],
+      Body: () => <p>Travel agents used models like this.</p>,
+    })
+
+    await renderPiecePage('connie')
+
+    const heading = screen.getByRole('heading', { level: 2, name: 'Sources' })
+    expect(
+      comesAfter(
+        heading,
+        screen.getByText('Travel agents used models like this.'),
+      ),
+    ).toBe(true)
+    const sources = within(screen.getByRole('list')).getAllByRole('listitem')
+    expect(sources).toHaveLength(2)
+    expect(
+      within(sources[0]).getByRole('link', {
+        name: 'Lockheed Martin: the Constellation',
+      }),
+    ).toHaveAttribute(
+      'href',
+      'https://www.lockheedmartin.com/en-us/news/features/history/constellation.html',
+    )
+    expect(sources[1]).toHaveTextContent(
+      'Conversation with a retired BOAC travel agent, 2019',
+    )
+    expect(within(sources[1]).queryByRole('link')).not.toBeInTheDocument()
+  })
+
   describe('when no piece has that slug', () => {
     it('shows the not-found page', async () => {
       getPiece.mockResolvedValue(undefined)
