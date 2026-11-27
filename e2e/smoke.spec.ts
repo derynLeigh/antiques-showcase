@@ -32,6 +32,8 @@ const teaCaddy = {
   path: '/collection/smoke-georgian-tea-caddy',
   title: 'Georgian silver tea caddy',
   photo: 'Oval silver tea caddy with a domed lid, on a linen backdrop',
+  made: 'c. 1784',
+  story: 'Tea was precious enough to keep under lock and key.',
 }
 const connie = {
   title: "Lockheed Constellation 'Connie' shop display model",
@@ -79,6 +81,29 @@ test.describe('collection page', () => {
     await expect(
       page.getByRole('heading', { level: 1, name: teaCaddy.title }),
     ).toBeVisible()
+    expect(errors).toEqual([])
+  })
+})
+
+test.describe('piece page', () => {
+  // A photo that fails to load still shows its alt text, so the test checks
+  // the browser actually decoded an image for it.
+  test('shows the title, date made, photo and story', async ({ page }) => {
+    const errors = watchForErrors(page)
+
+    const response = await page.goto(teaCaddy.path)
+
+    expect(response?.ok()).toBe(true)
+    await expect(
+      page.getByRole('heading', { level: 1, name: teaCaddy.title }),
+    ).toBeVisible()
+    await expect(page.getByText(teaCaddy.made, { exact: true })).toBeVisible()
+    const photo = page.getByRole('img', { name: teaCaddy.photo })
+    await expect(photo).toBeVisible()
+    await expect
+      .poll(() => photo.evaluate((img: HTMLImageElement) => img.naturalWidth))
+      .toBeGreaterThan(0)
+    await expect(page.getByText(teaCaddy.story)).toBeVisible()
     expect(errors).toEqual([])
   })
 })
