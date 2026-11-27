@@ -107,3 +107,18 @@ test.describe('piece page', () => {
     expect(errors).toEqual([])
   })
 })
+
+// Vercel Web Analytics adds its script in the browser after the page loads,
+// so it isn't in the built HTML. Here the request gets a 404, as the script
+// only exists on Vercel: the test checks the site asks for it.
+test.describe('analytics', () => {
+  test("requests Vercel's analytics script", async ({ page }) => {
+    const analyticsScript = page.waitForRequest((request) =>
+      request.url().endsWith('/_vercel/insights/script.js'),
+    )
+
+    await page.goto('/')
+
+    await expect(analyticsScript).resolves.toBeTruthy()
+  })
+})
