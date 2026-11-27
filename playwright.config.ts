@@ -1,9 +1,10 @@
 import { defineConfig, devices } from '@playwright/test'
 
-// Real-browser smoke tests, run against a production build of the site. The
-// real content may have no pieces yet, so scripts/smoke-build.sh runs these
-// after building with the fixture pieces. To run them on their own, build
-// first (npm run build), then npm run test:browser.
+// Real-browser smoke tests, run against a production build of the site. They
+// need the fixture pieces, so run them with npm run test:build: the smoke
+// build builds with the fixtures, then runs these before removing them. (npm
+// run test:browser alone runs them against whatever is in .next, which has no
+// pieces after a normal build.)
 //
 // Tests live in e2e/, outside src/, so Vitest never picks them up.
 export default defineConfig({
@@ -14,6 +15,8 @@ export default defineConfig({
   reporter: process.env.CI ? 'list' : [['list'], ['html', { open: 'never' }]],
   use: {
     baseURL: 'http://localhost:3100',
+    // A missing link or button fails in seconds, not at the test's timeout.
+    actionTimeout: 5_000,
     trace: 'on-first-retry',
   },
   projects: [
