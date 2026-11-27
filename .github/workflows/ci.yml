@@ -41,6 +41,10 @@ jobs:
       - name: Build
         run: npm run build
 
+      # For the real-browser smoke tests, which the smoke build runs.
+      - name: Install browsers for Playwright
+        run: npx playwright install --with-deps chromium webkit
+
       # The build above uses the real content, which may have no pieces yet.
       # This builds fixture pieces too, and checks a broken piece fails.
       - name: Smoke build with fixture pieces

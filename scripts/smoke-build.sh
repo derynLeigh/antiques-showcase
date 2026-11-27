@@ -4,7 +4,8 @@
 #   1. valid pieces bundle, their photos process, and each gets a prebuilt page
 #      with its own title and link preview tags, linked from the collection page
 #   2. every link from one page to another leads to a page that was built
-#   3. a piece with problems stops the build, listing what to fix
+#   3. the pages work in real browsers (Chromium and WebKit), with Playwright
+#   4. a piece with problems stops the build, listing what to fix
 #
 # The test fixtures are copied in under smoke- names and removed on exit, even
 # after a failure. Afterwards .next holds the smoke build; run npm run build
@@ -63,6 +64,12 @@ done
 node scripts/check-links.mjs .next/server/app ||
   fail "some links lead to pages that weren't built (listed above)"
 
+# Real-browser smoke tests against this build, in Chromium and WebKit. They
+# run here because this build has the fixture pieces in it. See
+# playwright.config.ts.
+echo "== Real-browser smoke tests"
+npx playwright test || fail "the real-browser smoke tests failed (listed above)"
+
 echo "== Smoke build 2 of 2: a piece left as the unfilled template"
 cp -R "$pieces/_template" "$pieces/smoke-unfilled"
 if output=$(npx next build 2>&1); then
@@ -75,4 +82,4 @@ grep -q 'smoke-unfilled: title is required' <<<"$output" ||
   fail "the problems don't name the unfilled piece:
 $output"
 
-echo "Smoke build passed: valid pieces build, every link leads to a built page, and a piece with problems stops the build."
+echo "Smoke build passed: valid pieces build, every link leads to a built page, the pages work in real browsers, and a piece with problems stops the build."
